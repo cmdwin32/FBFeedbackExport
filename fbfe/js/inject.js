@@ -37,11 +37,16 @@ function download(filename, text) {
   document.body.removeChild(element);
 }
 
+function realText(text){
+	return text.replace("\n","").replace(",","，");
+}
+
 function findAllData()
 {
 	var nL = document.getElementsByClassName("userContentWrapper");
 	var data = "";
 	for (var i = 0; i < nL.length; i++) {
+		console.log("nl:"+i+":"+nL.length);
 		// 分享的内容
 		var cN = nL[i].getElementsByClassName("userContent")
 		for (var j = 0; j < cN.length; j++) {
@@ -59,7 +64,7 @@ function findAllData()
 						text += cNS[l].innerText;
 					}
 					else if(cNS[l].nodeName == "A"){
-						text += "[#]"+cNS[l].href+"[#]";
+						text += "["+cNS[l].innerText+"]#"+cNS[l].href+"#";
 					}
 					else if(cNS[l].nodeName == "BR"){
 
@@ -69,39 +74,138 @@ function findAllData()
 						console.log(cNS[l]);
 					}
 				}
-				data += "title,"+text.replace("\n","")+",\n";
+				data += "title,"+realText(text)+",\n";
 			}
 			// console.log("pN"+pN.length);
 		}
 		// console.log("cN"+cN.length);
-		// 分享的评论
-		var bB = nL[i].getElementsByClassName("UFICommentBody");
-		// console.log("xx:"+bB.length);
-		for (var j = 0; j < bB.length; j++) {
-			// console.log(bB[j].innerHTML);
-			var bCN = bB[j].childNodes;
-			var text = "";
-			// console.log("text##");
-			for(var k = 0;k < bCN.length; k++){
-				if (bCN[k].nodeName == "#text") {
-					text += bCN[k].nodeValue;
-				}
-				else if(bCN[k].nodeName == "SPAN"){
-					text += bCN[k].innerText;
-				}
-				else if(bCN[k].nodeName == "A"){
-					text += "[#]"+bCN[k].href+"[#]";
-				}
-				else if(bCN[k].nodeName == "BR"){
-
-				}
-				else{
-					console.log(i+""+j+""+k+":");
-					console.log(bCN[k]);
+		// 发布时间
+		var timeNode = nL[i].getElementsByClassName("livetimestamp");
+		data += ",timestamp,"+timeNode[0].getAttribute("title")+"\n";
+		// 分享的次数
+		var sN = nL[i].getElementsByClassName("UFIShareLink");
+		data += ",shareTimes,"+sN[0].textContent+"\n";
+		console.log(sN[0]);
+		// 点赞次数
+		var zanN = nL[i].getElementsByClassName("UFILikeSentence");
+		var azanN = zanN[0].getElementsByTagName("a");
+		for(var z = 0; z < azanN.length; ++z){
+			var zanData = azanN[z].getAttribute("aria-label");
+			if (zanData) {
+				data += ",zan,"+azanN[z].getAttribute("aria-label")+"\n";
+			}
+		}
+		// 遍历一级分享和二级分享集合
+		var fLCN = nL[i].getElementsByClassName("UFIList")[0].childNodes;
+		console.log("fLCN.lenght"+fLCN.length);
+		for(var z = 0; z < fLCN.length; ++z){
+			if (fLCN[z].nodeName == "DIV") {
+				if (fLCN[z].childNodes.length == 1 && fLCN[z].childNodes[0].classList.length == 0) {
+					console.log("found fLCN");
+					fLCN = fLCN[z].childNodes[0].childNodes;
+					break;
 				}
 			}
-			data += ",text,"+text.replace("\n","")+",\n";
 		}
+		console.log("fLCN.lenght"+fLCN.length);
+		for(var j = 0;j < fLCN.length; ++j){
+			console.log(j+fLCN[j].classList);
+			if (fLCN[j].classList.contains("UFIComment")) {
+				var bB = fLCN[j].getElementsByClassName("UFICommentBody");
+				console.log("xx:"+bB.length);
+				// 分享的文字内容
+				for (var k = 0; k < bB.length; k++) {
+					// console.log(bB[j].innerHTML);
+					var bCN = bB[k].childNodes;
+					var text = "";
+					// console.log("text##");
+					for(var l = 0;l < bCN.length; l++){
+						if (bCN[l].nodeName == "#text") {
+							text += bCN[l].nodeValue;
+						}
+						else if(bCN[l].nodeName == "SPAN"){
+							text += bCN[l].innerText;
+						}
+						else if(bCN[l].nodeName == "A"){
+							text += "["+bCN[l].innerText+"]#"+bCN[l].href+"#";
+						}
+						else if(bCN[l].nodeName == "BR"){
+
+						}
+						else{
+							console.log(i+""+j+""+k+""+l+":");
+							console.log(bCN[l]);
+						}
+					}
+					data += ",text,"+realText(text)+",";
+					console.log(data);
+				}
+				// 获得评论的时间
+				var timeNode = fLCN[j].getElementsByClassName("UFISutroCommentTimestamp");
+				data += timeNode[0].getAttribute("title")+",";
+				// 获得点赞数
+				var zanN = fLCN[j].getElementsByClassName("UFICommentReactionsBling");
+				if(zanN && zanN.length >0){
+					var azanN = zanN[0].getElementsByTagName("span");
+					for(var z = 0; z < azanN.length; ++z){
+						var zanData = azanN[z].getAttribute("aria-label");
+						if (zanData) {
+							data += azanN[z].getAttribute("aria-label")+",";
+						}
+					}
+				}
+				data += "\n";
+				console.log(data);
+			}
+			else if(fLCN[j].classList.contains("UFIReplyList")){
+				console.log("二级回复");
+				var rN = fLCN[j].getElementsByClassName("UFICommentContentBlock");
+				for(var k = 0;k < rN.length; ++k){
+					// 获得回复内容
+					var bB = rN[k].getElementsByClassName("UFICommentBody");
+					var bCN = bB[0].childNodes;
+					var text = "";
+					// console.log("text##");
+					for(var l = 0;l < bCN.length; l++){
+						if (bCN[l].nodeName == "#text") {
+							text += bCN[l].nodeValue;
+						}
+						else if(bCN[l].nodeName == "SPAN"){
+							text += bCN[l].innerText;
+						}
+						else if(bCN[l].nodeName == "A"){
+							text += "["+bCN[l].innerText+"]#"+bCN[l].href+"#";
+						}
+						else if(bCN[l].nodeName == "BR"){
+
+						}
+						else{
+							console.log(i+""+j+""+k+""+l+":");
+							console.log(bCN[l]);
+						}
+					}
+					data += ",,reply,"+realText(text)+",";
+					// 获得时间
+					var timeNode = rN[k].getElementsByClassName("UFISutroCommentTimestamp");
+					if (timeNode.length > 0) {
+						data += timeNode[0].getAttribute("title")+",";	
+					}
+					// 获得点赞
+					var zanN = rN[k].getElementsByClassName("UFICommentReactionsBling");
+					if(zanN && zanN.length >0){
+						var azanN = zanN[0].getElementsByTagName("span");
+						for(var z = 0; z < azanN.length; ++z){
+							var zanData = azanN[z].getAttribute("aria-label");
+							if (zanData) {
+								data += azanN[z].getAttribute("aria-label")+",";
+							}
+						}
+					}
+					data += "\n";
+				}
+			}
+		}
+
 	}
 	console.log("##data:");
 	console.log(data);
