@@ -38,17 +38,64 @@ function download(filename, text) {
 }
 
 function realText(text){
-	return text.replace("\n","").replace(",","，");
+	return text.replace(/[\r\n]/g,"").replace(/,/g,"，");
+}
+
+function strNum(text){
+	if (text.indexOf("萬") > 0) {
+		text = text.replace(/,/g,"");
+		text = text.match(/\d+/g).map(Number);
+		text = text[0]*10000+text[1]*1000;
+		return text
+	}
+	return text.replace(/,/g,"");
+}
+
+function realNum(text){
+	console.log(text);
+	console.log(text.replace(/,/g,""));
+	if (text.indexOf("萬") > 0) {
+		text = text.replace(/,/g,"");
+		console.log(text)
+		text = text.match(/\d+/g).map(Number);
+		text = text[0]*10000+text[1]*1000;
+		console.log(text);
+		return [text];
+	}
+	console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
+	return text.replace(/,/g,"").match(/\d+/g).map(Number);
 }
 
 function findAllData()
 {
 	var nL = document.getElementsByClassName("userContentWrapper");
+	var resData = [];
+	var keys = ["id","类型","内容","作者姓名","发布时间","分享次数","总点讚","讚","大心","哇","哈","嗚","怒","",""];
+	resData.push(keys);
+	var index = {
+		id : 0,
+		type : 1,
+		content : 2,
+		author : 3,
+		time : 4,
+		shareTimes : 5,
+		totleLike : 6,
+		like : 7,
+		sheart : 8,
+		wa : 9,
+		wu : 10,
+		angry : 11
+	};
 	var data = "";
+	var pIdx = 1;
 	for (var i = 0; i < nL.length; i++) {
 		console.log("nl:"+i+":"+nL.length);
+		var line = new Array(keys.length);
+		line[index.id] = pIdx;
+		pIdx++;
 		// 分享的内容
 		var cN = nL[i].getElementsByClassName("userContent")
+		var title = "";
 		for (var j = 0; j < cN.length; j++) {
 			var pN = cN[j].getElementsByTagName("p");
 			for (var k = 0; k < pN.length; k++) {
@@ -74,27 +121,69 @@ function findAllData()
 						console.log(cNS[l]);
 					}
 				}
-				data += "title,"+realText(text)+",\n";
+				// data += "title,"+realText(text)+",\n";
+				title += realText(text);
+
 			}
 			// console.log("pN"+pN.length);
 		}
+		line[index.type]="分享内容";
+		line[index.content] = title;
 		// console.log("cN"+cN.length);
 		// 发布时间
 		var timeNode = nL[i].getElementsByClassName("livetimestamp");
-		data += ",timestamp,"+timeNode[0].getAttribute("title")+"\n";
+		if (timeNode && timeNode.length > 0) {
+			line[index.time] = timeNode[0].getAttribute("title");	
+		}
+		//data += ",timestamp,"+timeNode[0].getAttribute("title")+"\n";
+		
 		// 分享的次数
 		var sN = nL[i].getElementsByClassName("UFIShareLink");
-		data += ",shareTimes,"+sN[0].textContent+"\n";
-		console.log(sN[0]);
+		// data += ",shareTimes,"+sN[0].textContent+"\n";
+		if (sN && sN.length > 0) {
+			line[index.shareTimes] = realNum(sN[0].textContent);	
+		}
+		
+		// console.log(sN[0]);
 		// 点赞次数
 		var zanN = nL[i].getElementsByClassName("UFILikeSentence");
 		var azanN = zanN[0].getElementsByTagName("a");
+		var totleLike = 0;
 		for(var z = 0; z < azanN.length; ++z){
 			var zanData = azanN[z].getAttribute("aria-label");
 			if (zanData) {
-				data += ",zan,"+azanN[z].getAttribute("aria-label")+"\n";
+				// 从赞遍历到
+				for(var idx = index.like; idx < index.angry; ++idx){
+					// 匹配到第一个点赞类型
+					if (zanData.indexOf(keys[idx]) >= 0) {
+						console.log(zanData);
+						var numLike = realNum(zanData);
+						console.log(numLike);
+						if (numLike && numLike.length >0) {
+							totleLike += numLike[0];
+							line[idx] = "" + numLike[0];
+							break;
+						}
+						console.log(totleLike);
+						console.log(line[idx]);
+						console.log(keys[idx]);
+					}
+				}
+				//data += ",zan,"+azanN[z].getAttribute("aria-label")+"\n";
 			}
 		}
+		// 获取总赞
+		var tZanNode = zanN[0].getElementsByTagName("span");
+		for(var zIdx = 0; zIdx < tZanNode.length; ++zIdx){
+			if (tZanNode[zIdx].getAttribute("data-hover") == "tooltip") {
+				var tData = tZanNode[zIdx].innerText;
+				if (tData.indexOf("你和其他") >= 0 || strNum(tData) == realNum(tData)[0]) {
+					line[index.totleLike] = realNum(tData);
+				}
+			}
+		}
+		// line[index.totleLike] = totleLike;
+		resData.push(line);
 		// 遍历一级分享和二级分享集合
 		var fLCN = nL[i].getElementsByClassName("UFIList")[0].childNodes;
 		console.log("fLCN.lenght"+fLCN.length);
@@ -113,55 +202,87 @@ function findAllData()
 			if (fLCN[j].classList.contains("UFIComment")) {
 				var bB = fLCN[j].getElementsByClassName("UFICommentBody");
 				console.log("xx:"+bB.length);
+				line = new Array(keys.length);
+				line[index.id] = pIdx;
+				pIdx++;
 				// 分享的文字内容
-				for (var k = 0; k < bB.length; k++) {
-					// console.log(bB[j].innerHTML);
-					var bCN = bB[k].childNodes;
-					var text = "";
-					// console.log("text##");
-					for(var l = 0;l < bCN.length; l++){
-						if (bCN[l].nodeName == "#text") {
-							text += bCN[l].nodeValue;
-						}
-						else if(bCN[l].nodeName == "SPAN"){
-							text += bCN[l].innerText;
-						}
-						else if(bCN[l].nodeName == "A"){
-							text += "["+bCN[l].innerText+"]#"+bCN[l].href+"#";
-						}
-						else if(bCN[l].nodeName == "BR"){
-
-						}
-						else{
-							console.log(i+""+j+""+k+""+l+":");
-							console.log(bCN[l]);
-						}
+				// console.log(bB[j].innerHTML);
+				// 只会有一个内容
+				var bCN = bB[0].childNodes;
+				var text = "";
+				// console.log("text##");
+				for(var l = 0;l < bCN.length; l++){
+					if (bCN[l].nodeName == "#text") {
+						text += bCN[l].nodeValue;
 					}
-					data += ",text,"+realText(text)+",";
-					console.log(data);
+					else if(bCN[l].nodeName == "SPAN"){
+						text += bCN[l].innerText;
+					}
+					else if(bCN[l].nodeName == "A"){
+						text += bCN[l].innerText;
+					}
+					else if(bCN[l].nodeName == "BR"){
+
+					}
+					else{
+						console.log(i+""+j+""+k+""+l+":");
+						console.log(bCN[l]);
+					}
 				}
+				line[index.content] = realText(text);
+				// data += ",text,"+realText(text)+",";
+				console.log(data);
 				// 获得评论的时间
 				var timeNode = fLCN[j].getElementsByClassName("UFISutroCommentTimestamp");
-				data += timeNode[0].getAttribute("title")+",";
+				// data += timeNode[0].getAttribute("title")+",";
+				line[index.time] = timeNode[0].getAttribute("title");
 				// 获得点赞数
 				var zanN = fLCN[j].getElementsByClassName("UFICommentReactionsBling");
+				var totleLike = 0;
 				if(zanN && zanN.length >0){
 					var azanN = zanN[0].getElementsByTagName("span");
 					for(var z = 0; z < azanN.length; ++z){
 						var zanData = azanN[z].getAttribute("aria-label");
 						if (zanData) {
-							data += azanN[z].getAttribute("aria-label")+",";
+							// 从赞遍历到
+							for(var idx = index.like; idx < index.angry; ++idx){
+								// 匹配到第一个点赞类型
+								if (zanData.indexOf(keys[idx]) >= 0) {
+									var numLike = realNum(zanData);
+									if (numLike && numLike.length >0) {
+										totleLike += numLike[0];
+										line[idx] = "" + numLike[0];
+										break;
+									}
+								}
+							}
 						}
 					}
+					// 获取总赞
+					var tZanNode = zanN[0].getElementsByClassName("UFICommentLikeButton");
+					for(var zIdx = 0; zIdx < tZanNode.length; ++zIdx){
+						// if (tZanNode[zIdx].getAttribute("data-hover") == "tooltip") {
+						var tData = tZanNode[zIdx].innerText;
+						if (tData.indexOf("你和其他") >= 0 || strNum(tData) == realNum(tData)[0]) {
+							line[index.totleLike] = realNum(tData);
+						}
+						// }
+					}
 				}
-				data += "\n";
-				console.log(data);
+				line[index.type] = "一级回复";
+				// line[index.totleLike] = totleLike;
+				resData.push(line);
+				// data += "\n";
+				// console.log(data);
 			}
 			else if(fLCN[j].classList.contains("UFIReplyList")){
 				console.log("二级回复");
 				var rN = fLCN[j].getElementsByClassName("UFICommentContentBlock");
 				for(var k = 0;k < rN.length; ++k){
 					// 获得回复内容
+					line = new Array(keys.length);
+					line[index.id] = pIdx;
+					pIdx++;
 					var bB = rN[k].getElementsByClassName("UFICommentBody");
 					var bCN = bB[0].childNodes;
 					var text = "";
@@ -174,7 +295,7 @@ function findAllData()
 							text += bCN[l].innerText;
 						}
 						else if(bCN[l].nodeName == "A"){
-							text += "["+bCN[l].innerText+"]#"+bCN[l].href+"#";
+							text += bCN[l].innerText;
 						}
 						else if(bCN[l].nodeName == "BR"){
 
@@ -184,33 +305,90 @@ function findAllData()
 							console.log(bCN[l]);
 						}
 					}
-					data += ",,reply,"+realText(text)+",";
+					// data += ",,reply,"+realText(text)+",";
+					line[index.type] = "二级回复";
+					line[index.content] = realText(text);
 					// 获得时间
 					var timeNode = rN[k].getElementsByClassName("UFISutroCommentTimestamp");
 					if (timeNode.length > 0) {
-						data += timeNode[0].getAttribute("title")+",";	
+						// data += timeNode[0].getAttribute("title")+",";	
+						line[index.time] = timeNode[0].getAttribute("title");
 					}
 					// 获得点赞
 					var zanN = rN[k].getElementsByClassName("UFICommentReactionsBling");
+					var totleLike = 0;
 					if(zanN && zanN.length >0){
 						var azanN = zanN[0].getElementsByTagName("span");
 						for(var z = 0; z < azanN.length; ++z){
 							var zanData = azanN[z].getAttribute("aria-label");
 							if (zanData) {
-								data += azanN[z].getAttribute("aria-label")+",";
+
+								// 从赞遍历到
+								for(var idx = index.like; idx < index.angry; ++idx){
+									// 匹配到第一个点赞类型
+									if (zanData.indexOf(keys[idx]) >= 0) {
+										var numLike = realNum(zanData);
+										if (numLike && numLike.length >0) {
+											totleLike += numLike[0];
+											line[idx] = "" + numLike[0];
+											break;
+										}
+									}
+								}	
 							}
 						}
+						var tZanNode = zanN[0].getElementsByClassName("UFICommentLikeButton");
+						for(var zIdx = 0; zIdx < tZanNode.length; ++zIdx){
+							// if (tZanNode[zIdx].getAttribute("data-hover") == "tooltip") {
+							var tData = tZanNode[zIdx].innerText;
+							if (tData.indexOf("你和其他") >= 0 || strNum(tData) == realNum(tData)[0]) {
+								line[index.totleLike] = realNum(tData);
+							}
+							// }
+						}
 					}
-					data += "\n";
+					// line[index.totleLike] = ""+totleLike;
+					// data += "\n";
+					resData.push(line);
 				}
 			}
 		}
 
 	}
-	console.log("##data:");
-	console.log(data);
-	console.log("######");
+	// console.log("##data:");
+	// console.log(data);
+	// console.log("######");
 	var d = new Date();
 	var fileName = "FBData_"+d.toLocaleTimeString()+".csv";
-	download(fileName,data);
+	var cvsData = "";
+	for(var i = 0; i < resData.length; ++i){
+		for (var j = 0; j < resData[i].length; ++j){
+			if (resData[i][j]) {
+				cvsData += resData[i][j]+",";
+			}
+			else{
+				cvsData += ",";
+			}
+		}
+		cvsData += "\n";
+	}
+	download(fileName,cvsData);
+	// exportExcel(resData,"FBData_"+d.toLocaleTimeString()+".xlsx")
 }
+
+function exportExcel(data,filename){
+	var msg = {
+		data:data,
+		filename:filename
+	};
+	// window.postMessage({cmd: 'exportExcel', data: msg}, '*');
+
+	// console.log(document.body);
+	// console.log(XLSX);
+	// console.log(XLSX.utils);
+	// var wb = XLSX.utils.book_new();
+	// var ws = XLSX.utils.aoa_to_sheet(data);
+	// XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+	// XLSX.writeFile(wb, filename);
+}
+
