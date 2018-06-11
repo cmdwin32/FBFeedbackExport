@@ -1,13 +1,13 @@
 {
 	"manifest_version":2,
 	"name":"fbfe",
-	"version":"1.2.0",
+	"version":"1.2.1",
 	"description":"descp",
 	"icons":
 	{
 		"16":"img/icon.png",
-		"48":"img/icon.jpg",
-		"128":"img/icon.jpg"
+		"48":"img/icon.png",
+		"128":"img/icon.png"
 	},
 	"background":
 	{
