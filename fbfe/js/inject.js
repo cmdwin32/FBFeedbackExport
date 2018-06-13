@@ -7,15 +7,29 @@ function dispatch(el, type){
     }catch(e){alert(e)};
 }
 function expansContent(type){
-	var expBtn = document.getElementsByClassName("UFIPagerLink");
-	if (expBtn.length <= 0 || type == 1) {
+
+	// 只在2的时候查找更多分享
+	if (type == 2) {
+		var expBtn = document.getElementsByClassName("UFIPagerLink");
+	}
+	else{
+		var expBtn = []
+	}
+
+	// 查找所有的“查看更多” 总是展开用户回复的隐藏内容
+	var moreBtns = document.getElementsByClassName("fss");
+	console.log("more btn:"+moreBtns.length);
+	if (expBtn.length <= 0 && moreBtns.length <= 0) {
 		findAllData();
 	}
 	else{
 		for (var i = 0; i < expBtn.length;i++){
 			dispatch(expBtn[i], 'click');
 		}
-		setTimeout(expansContent,5000);
+		for (var i = 0; i < moreBtns.length; i++) {
+			dispatch(moreBtns[i], 'click');
+		}
+		setTimeout(expansContent,1000);
 	}
 }
 
@@ -46,7 +60,7 @@ function strNum(text){
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
 		text = text.join('.');
-		text = text + "萬";
+		text = text + "W";
 		// text = text[0]*10000+text[1]*1000;
 		return [text]
 	}
@@ -60,7 +74,7 @@ function realNum(text){
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
 		text = text.join('.');
-		text = text + "萬";
+		text = text + "W";
 		// console.log(text)
 		// text = text[0]*10000+text[1]*1000;
 		// console.log(text);
@@ -77,28 +91,29 @@ function findAllDataInPhotoContextualLayer(){
 
 // 在影片类分享页面查找数据
 function findAllDataInVideoContextualLayer(){
-	
+
 }
 
 function findAllData()
 {
 	var nL = document.getElementsByClassName("userContentWrapper");
 	var resData = [];
-	var keys = ["id","类型","内容","作者姓名","发布时间","分享次数","总点讚","讚","大心","哇","哈","嗚","怒","",""];
+	var keys = ["id","类型","内容","作者姓名","发布日期","发布时间","分享次数","总点讚","讚","大心","哇","哈","嗚","怒","",""];
 	resData.push(keys);
 	var index = {
 		id : 0,
 		type : 1,
 		content : 2,
 		author : 3,
-		time : 4,
-		shareTimes : 5,
-		totleLike : 6,
-		like : 7,
-		sheart : 8,
-		wa : 9,
-		wu : 10,
-		angry : 11
+		date : 4,
+		time : 5,
+		shareTimes : 6,
+		totleLike : 7,
+		like : 8,
+		sheart : 9,
+		wa : 10,
+		wu : 11,
+		angry : 12
 	};
 	var data = "";
 	var pIdx = 1;
@@ -129,7 +144,7 @@ function findAllData()
 						text += cNS[l].innerText;
 					}
 					else if(cNS[l].nodeName == "BR"){
-
+						text += " ";
 					}
 					else{
 						console.log(i+""+j+""+k+""+l+":");
@@ -148,7 +163,10 @@ function findAllData()
 		// 发布时间
 		var timeNode = nL[i].getElementsByClassName("livetimestamp");
 		if (timeNode && timeNode.length > 0) {
-			line[index.time] = timeNode[0].getAttribute("title");	
+			var time = timeNode[0].getAttribute("title");	
+			time = time.split(" ");
+			line[index.date] = time[0];
+			line[index.time] = time[1];
 		}
 		//data += ",timestamp,"+timeNode[0].getAttribute("title")+"\n";
 		
@@ -160,6 +178,15 @@ function findAllData()
 		}
 		
 		// console.log(sN[0]);
+		// 用户名称
+		// var actorName = nL[i].getElementsByClassName("UFICommentActorName");
+		// if (actorName && actorName.length > 0) {
+		// 	var acName = "";
+		// 	for(var acNIdx = 0; acNIdx < actorName.length; ++ acNIdx){
+		// 		acName = actorName[acNIdx].textContent;
+		// 	}
+		// }
+		// line[index.author] = acName;
 		// 点赞次数
 		var zanN = nL[i].getElementsByClassName("UFILikeSentence");
 		if (zanN && zanN.length > 0) {
@@ -241,7 +268,7 @@ function findAllData()
 							text += bCN[l].innerText;
 						}
 						else if(bCN[l].nodeName == "BR"){
-
+							text += " ";
 						}
 						else{
 							console.log(i+""+j+""+k+""+l+":");
@@ -254,7 +281,10 @@ function findAllData()
 					// 获得评论的时间
 					var timeNode = fLCN[j].getElementsByClassName("UFISutroCommentTimestamp");
 					// data += timeNode[0].getAttribute("title")+",";
-					line[index.time] = timeNode[0].getAttribute("title");
+					var time = timeNode[0].getAttribute("title");
+					time = time.split(" ");
+					line[index.date] = time[0];
+					line[index.time] = time[1];
 					// 获得点赞数
 					var zanN = fLCN[j].getElementsByClassName("UFICommentReactionsBling");
 					var totleLike = 0;
@@ -317,7 +347,7 @@ function findAllData()
 								text += bCN[l].innerText;
 							}
 							else if(bCN[l].nodeName == "BR"){
-
+								text += " ";
 							}
 							else{
 								console.log(i+""+j+""+k+""+l+":");
@@ -331,7 +361,10 @@ function findAllData()
 						var timeNode = rN[k].getElementsByClassName("UFISutroCommentTimestamp");
 						if (timeNode.length > 0) {
 							// data += timeNode[0].getAttribute("title")+",";	
-							line[index.time] = timeNode[0].getAttribute("title");
+							var time = timeNode[0].getAttribute("title");
+							time = time.split(" ");
+							line[index.date] = time[0];
+							line[index.time] = time[1];
 						}
 						// 获得点赞
 						var zanN = rN[k].getElementsByClassName("UFICommentReactionsBling");
