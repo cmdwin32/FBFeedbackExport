@@ -6,29 +6,44 @@
 	<script type="text/javascript" src="../js/lib/xlsx.full.min.js"></script>
 	<script type="text/javascript" src="../js/inject.js" ></script>
 	<script type="text/javascript">
-		
-		var string = "1204个赞";
-		var numbers = string.match(/\d+/g).map(Number);
-		console.log(numbers);
-		function realNum(text){
-			console.log(text);
-			console.log(text.replace(/,/g,""));
-			if (text.indexOf("萬") > 0) {
-				text = text.replace(/,/g,"");
-				console.log(text)
-				text = text.match(/\d+/g).map(Number);
-				console.log(text)
-				text = text[0]*10000+text[1]*1000;
-				console.log(text);
-				return text;
-			}
-			console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
-			return text.replace(/,/g,"").match(/\d+/g).map(Number);
-		}
-		realNum("1.1 萬");
+		// var d = new Date();
+		// var n = d.getTimezoneOffset();
+		// console.log(n);
+		// var arr = [1,21,3,44,5];
+		// var date = "2019-12-18";
+		// date = date.replace(/'-'/g,'/');
+		// alert(Math.round(new Date(date).getTime()/1000)+n * 60);
+		// console.log(arr.sort(function(a, b) {
+		//   return a - b;
+		// }));
+		// var string = "1204个赞";
+		// var numbers = string.match(/\d+/g).map(Number);
+		// console.log(numbers);
+		// function realNum(text){
+		// 	console.log(text);
+		// 	console.log(text.replace(/,/g,""));
+		// 	if (text.indexOf("萬") > 0) {
+		// 		text = text.replace(/,/g,"");
+		// 		console.log(text)
+		// 		text = text.match(/\d+/g).map(Number);
+		// 		console.log(text)
+		// 		text = text[0]*10000+text[1]*1000;
+		// 		console.log(text);
+		// 		return text;
+		// 	}
+		// 	console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
+		// 	return text.replace(/,/g,"").match(/\d+/g).map(Number);
+		// }
+		// realNum("1.1 萬");
 	</script>
 </head>
-<body>
-<div onclick="testExcleJS()">1234</div>
-</body>
+<h2>插件操作区：</h2>
+		<div class="btn-area">
+			<div>开始日期: <input type="date" id="startTime" /></div>
+			<div>结束日期: <input type="date" id="endTime" /></div>
+			<a href="javascript:findAllFeedBack(0,0,1)">导出分享</a><br>
+			<a href="javascript:findAllFeedBack(0,0,1)">导出分享的反馈</a><br>
+		</div>
+		<div id="my_custom_log">
+		</div>
 </html>

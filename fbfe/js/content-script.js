@@ -51,13 +51,16 @@ function initCustomPanel()
 	var panel = document.createElement('div');
 	panel.className = 'chrome-plugin-demo-panel';
 	panel.innerHTML = `
-		<h2>插件操作区：</h2>
+<h2>插件操作区：</h2>
 		<div class="btn-area">
-			<a href="javascript:findAllFeedBack(1)">导出分享</a><br>
-			<a href="javascript:findAllFeedBack(2)">导出分享的反馈</a><br>
+			<div>开始日期: <input type="date" id="startTime" /></div>
+			<div>结束日期: <input type="date" id="endTime" /></div>
+			<a href="javascript:findAllFeedBack(0,0,1)">>>导出分享(不展开回复)<<</a><br>
+			<a href="javascript:findAllFeedBack(0,0,1)">>>导出分享(展开所有回复)<<</a><br>
 		</div>
 		<div id="my_custom_log">
 		</div>
+</html>
 	`;
 	document.body.appendChild(panel);
 }

@@ -1,4 +1,58 @@
 console.log("inject loaded");
+
+var langauge = {
+	"cht":{
+		"wan":"萬",
+		"zan":"讚",
+		"daxin":"大心",
+		"wa":"哇",
+		"ha":"哈",
+		"wu":"嗚",
+		"nu":"怒",
+	},
+	"chs":{
+		"wan":"万",
+		"zan":"赞",
+		"daxin":"大爱",
+		"wa":"哇",
+		"ha":"笑趴",
+		"wu":"心碎",
+		"nu":"怒",
+	},
+	"en":{
+
+	}
+}
+
+
+
+var langType = "chs";
+
+
+function findAllFeedBack(startTime,endTime,type)
+{
+	if (startTime == 0) {
+		startTime = document.getElementById("startTime").value;
+	}
+	if (endTime == 0) {
+		endTime = document.getElementById("endTime").value;
+	}
+	// 倒叙查找，开始要小于结束
+	if (startTime < endTime) {
+		var t = startTime;
+		startTime = endTime;
+		endTime = t;
+	}
+	console.log(startTime)
+	console.log(endTime);
+	LoadPageWithDataRange(getTimestamp(startTime),getTimestamp(endTime),type);
+	// expansContent(type);
+}
+
+function getLangText(key){
+	return langauge[langType][key];
+}
+
 function dispatch(el, type){
     try{
         var evt = document.createEvent('Event');
@@ -6,6 +60,61 @@ function dispatch(el, type){
         el.dispatchEvent(evt);
     }catch(e){alert(e)};
 }
+
+function getTimestamp(date){
+	date = date.replace(/'-'/g,'/');
+	var d = new Date();
+	var n = d.getTimezoneOffset();
+	return Math.round(new Date(date).getTime()/1000)+n * 60; //先获得utc时间，然后根据本地的时区差值，计算本地时间
+}
+
+function LoadPageWithDataRange(startTimestamp,endTimestamp,type){
+	console.log("startTimestamp"+startTimestamp);
+	console.log("endTimestamp"+endTimestamp);
+	var timeList = [];
+	// 查找到所有分享
+	var nL = document.getElementsByClassName("userContentWrapper");
+	console.log("nL"+nL.length);
+	for(var nIdx = 0;nIdx < nL.length; ++ nIdx){
+		var timeNode = nL[nIdx].getElementsByClassName("timestampContent");
+		if (timeNode && timeNode.length > 0) {
+			var time = timeNode[0].parentNode.getAttribute("data-utime");	
+			console.log("time"+time);
+			if (time) {
+				timeList.push(time);
+			}
+		}
+	}
+	// // 排序时间
+	// timeList.sort(function(a, b) {
+	//   return a - b;
+	// });
+	// 如果没有加载到指定的结束时间，就调用页面的继续加载接口
+	if (timeList[timeList.length-1] > endTimestamp) {
+		// 直接查询物理位置最后一个，这样可以避免置顶的帖子很旧的问题
+		var getMorePageNode = document.getElementsByClassName("uiMorePager");
+		if (getMorePageNode && getMorePageNode.length > 0) {
+			getMorePageNode[0].scrollIntoView();
+			dispatch(getMorePageNode[0],"click");
+			// 加载下一页
+			setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,type);
+		}
+		else{
+			console.log("no uiMorePager");
+			console.log(getMorePageNode);
+			//expansContent(type)
+		}
+	}
+	else{
+		console.log(timeList);
+		console.log(endTimestamp);
+		expansContent(type);
+	}
+}
+
+// 导出数据的入口
+// type 1 = 不展开直接导出
+// type 2 = 展开全部回复导出，可能会把chrome卡死
 function expansContent(type){
 
 	// 只在2的时候查找更多分享
@@ -19,7 +128,7 @@ function expansContent(type){
 	// 查找所有的“查看更多” 总是展开用户回复的隐藏内容
 	var moreBtns = document.getElementsByClassName("fss");
 	console.log("more btn:"+moreBtns.length);
-	if (expBtn.length <= 0 && moreBtns.length <= 0) {
+	if ( expBtn.length <= 0 && moreBtns.length <= 0) { //true ){//
 		findAllData();
 	}
 	else{
@@ -29,13 +138,8 @@ function expansContent(type){
 		for (var i = 0; i < moreBtns.length; i++) {
 			dispatch(moreBtns[i], 'click');
 		}
-		setTimeout(expansContent,1000);
+		setTimeout(expansContent,1000,type);
 	}
-}
-
-function findAllFeedBack(type)
-{
-	expansContent(type);
 }
 
 function download(filename, text) {
@@ -56,7 +160,7 @@ function realText(text){
 }
 
 function strNum(text){
-	if (text.indexOf("萬") > 0) {
+	if (text.indexOf(getLangText("wan")) > 0) {
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
 		text = text.join('.');
@@ -70,7 +174,7 @@ function strNum(text){
 function realNum(text){
 	// console.log(text);
 	// console.log(text.replace(/,/g,""));
-	if (text.indexOf("萬") > 0) {
+	if (text.indexOf(getLangText("wan")) > 0) {
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
 		text = text.join('.');
@@ -86,6 +190,7 @@ function realNum(text){
 
 // 在图片类分享页面查找数据
 function findAllDataInPhotoContextualLayer(){
+	// 获取所以分享的创建时间
 
 }
 
@@ -98,7 +203,24 @@ function findAllData()
 {
 	var nL = document.getElementsByClassName("userContentWrapper");
 	var resData = [];
-	var keys = ["id","类型","内容","作者姓名","发布日期","发布时间","分享次数","总点讚","讚","大心","哇","哈","嗚","怒","",""];
+	var keys = [
+		"id",
+		"类型",
+		"内容",
+		"作者姓名",
+		"发布日期",
+		"发布时间",
+		"分享次数",
+		"总点讚",
+		getLangText("zan"),
+		getLangText("daxin"),
+		getLangText("wa"),
+		getLangText("ha"),
+		getLangText("wu"),
+		getLangText("nu"),
+		"",
+		""
+	];
 	resData.push(keys);
 	var index = {
 		id : 0,
@@ -161,9 +283,9 @@ function findAllData()
 		line[index.content] = title;
 		// console.log("cN"+cN.length);
 		// 发布时间
-		var timeNode = nL[i].getElementsByClassName("livetimestamp");
+		var timeNode = nL[i].getElementsByClassName("timestampContent");
 		if (timeNode && timeNode.length > 0) {
-			var time = timeNode[0].getAttribute("title");	
+			var time = timeNode[0].parentNode.getAttribute("title");	
 			time = time.split(" ");
 			line[index.date] = time[0];
 			line[index.time] = time[1];
