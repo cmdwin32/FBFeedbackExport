@@ -53,7 +53,8 @@ function initCustomPanel()
 	panel.innerHTML = `
 		<h2>插件操作区：</h2>
 		<div class="btn-area">
-			<a href="javascript:findAllFeedBack()">找到所有的分享反馈</a><br>
+			<a href="javascript:findAllFeedBack(1)">导出分享</a><br>
+			<a href="javascript:findAllFeedBack(2)">导出分享的反馈</a><br>
 		</div>
 		<div id="my_custom_log">
 		</div>

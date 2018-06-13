@@ -6,22 +6,22 @@ function dispatch(el, type){
         el.dispatchEvent(evt);
     }catch(e){alert(e)};
 }
-function expansContent(){
+function expansContent(type){
 	var expBtn = document.getElementsByClassName("UFIPagerLink");
-	if (expBtn.length <= 0) {
+	if (expBtn.length <= 0 || type == 1) {
 		findAllData();
 	}
 	else{
 		for (var i = 0; i < expBtn.length;i++){
 			dispatch(expBtn[i], 'click');
 		}
-		setTimeout(expansContent,1000);
+		setTimeout(expansContent,5000);
 	}
 }
 
-function findAllFeedBack()
+function findAllFeedBack(type)
 {
-	expansContent();
+	expansContent(type);
 }
 
 function download(filename, text) {
@@ -45,25 +45,39 @@ function strNum(text){
 	if (text.indexOf("萬") > 0) {
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
-		text = text[0]*10000+text[1]*1000;
-		return text
+		text = text.join('.');
+		text = text + "萬";
+		// text = text[0]*10000+text[1]*1000;
+		return [text]
 	}
 	return text.replace(/,/g,"");
 }
 
 function realNum(text){
-	console.log(text);
-	console.log(text.replace(/,/g,""));
+	// console.log(text);
+	// console.log(text.replace(/,/g,""));
 	if (text.indexOf("萬") > 0) {
 		text = text.replace(/,/g,"");
-		console.log(text)
 		text = text.match(/\d+/g).map(Number);
-		text = text[0]*10000+text[1]*1000;
-		console.log(text);
+		text = text.join('.');
+		text = text + "萬";
+		// console.log(text)
+		// text = text[0]*10000+text[1]*1000;
+		// console.log(text);
 		return [text];
 	}
-	console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
+	// console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
 	return text.replace(/,/g,"").match(/\d+/g).map(Number);
+}
+
+// 在图片类分享页面查找数据
+function findAllDataInPhotoContextualLayer(){
+
+}
+
+// 在影片类分享页面查找数据
+function findAllDataInVideoContextualLayer(){
+	
 }
 
 function findAllData()
@@ -111,7 +125,8 @@ function findAllData()
 						text += cNS[l].innerText;
 					}
 					else if(cNS[l].nodeName == "A"){
-						text += "["+cNS[l].innerText+"]#"+cNS[l].href+"#";
+						// text += "["+cNS[l].innerText+"]#"+cNS[l].href+"#";
+						text += cNS[l].innerText;
 					}
 					else if(cNS[l].nodeName == "BR"){
 
@@ -158,17 +173,17 @@ function findAllData()
 					for(var idx = index.like; idx < index.angry; ++idx){
 						// 匹配到第一个点赞类型
 						if (zanData.indexOf(keys[idx]) >= 0) {
-							console.log(zanData);
+							// console.log(zanData);
 							var numLike = realNum(zanData);
-							console.log(numLike);
+							// console.log(numLike);
 							if (numLike && numLike.length >0) {
 								totleLike += numLike[0];
 								line[idx] = "" + numLike[0];
 								break;
 							}
-							console.log(totleLike);
-							console.log(line[idx]);
-							console.log(keys[idx]);
+							// console.log(totleLike);
+							// console.log(line[idx]);
+							// console.log(keys[idx]);
 						}
 					}
 					//data += ",zan,"+azanN[z].getAttribute("aria-label")+"\n";
@@ -370,7 +385,7 @@ function findAllData()
 	var cvsData = "";
 	for(var i = 0; i < resData.length; ++i){
 		if (resData[i]) {
-			
+
 			for (var j = 0; j < resData[i].length; ++j){
 				if (resData[i][j]) {
 					cvsData += resData[i][j]+",";
