@@ -31,6 +31,8 @@ var langType = "chs";
 
 function findAllFeedBack(startTime,endTime,type)
 {
+	findAllDataInVideoContextualLayer();
+	return;
 	if (startTime == 0) {
 		startTime = document.getElementById("startTime").value;
 	}
@@ -51,6 +53,19 @@ function findAllFeedBack(startTime,endTime,type)
 
 function getLangText(key){
 	return langauge[langType][key];
+}
+
+function getTextFromElement(ele){
+	var resStr = "";
+	for (var i = 0; i < ele.childNodes ; ++i ){
+		if (ele.childNodes[i].nodeName == "#text") {
+			resStr += ele.childNodes[i].nodeValue;
+		}
+		else if(ele.childNodes[i].nodeName == "SPAN"){
+			resStr += ele.childNodes[i].innerText;
+
+		}
+	}
 }
 
 function dispatch(el, type){
@@ -194,9 +209,52 @@ function findAllDataInPhotoContextualLayer(){
 
 }
 
+
+// 展开视频界面的评论内容
+function expansVideoPageContent(){
+
+}
+
 // 在影片类分享页面查找数据
 function findAllDataInVideoContextualLayer(){
+	console.log("findAllDataInVideoContextualLayer");
+	var rootNode = document.getElementsByClassName("_5-g-");
+	console.log(rootNode);
+	if (rootNode && rootNode.length > 0) {
+		var cDiv = rootNode[0].childNodes;
+		console.log(cDiv);
+		if (cDiv && cDiv.length > 1) {
+			// 左侧节点是视频
+			var rightNode = cDiv[0];
+			// 右侧节点是回复和分享原文
+			var leftNode = cDiv[1];
+			// 查找分享正文
+			var leftNode = leftNode.getElementsByClassName("collapsible_comments");
+			console.log(leftNode);
+			if (leftNode.length > 0) {
+				leftNode = leftNode[0];
+				headNode = leftNode.getElementsByClassName("_1rgv");
+				console.log(headNode);
+				if (headNode && headNode.length > 0) {
+					titleNode = headNode[0].getElementsByClassName("_1rgw");
+					console.log("titleNode"+titleNode.length);
+					if (titleNode && titleNode.length > 0) {
+						var titleStr = titleNode[0].innerText;
+						console.log("titleStr"+titleStr);
+					}
+					contentNode = headNode[0].getElementsByClassName("_1rg-");
+					console.log("contentNode"+contentNode.length);
+						console.log(contentNode);
+					if (contentNode && contentNode.length > 0) {
+						var contentStr = contentNode[0].innerText;
+						console.log("contentStr"+contentStr);
+					}
+				}
+				
+			}
 
+		}
+	}
 }
 
 function findAllData()

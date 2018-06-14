@@ -35,6 +35,11 @@
 		// 	return text.replace(/,/g,"").match(/\d+/g).map(Number);
 		// }
 		// realNum("1.1 萬");
+		function findAllFeedBack(a,b,c){
+			var node = document.getElementById("my_span");
+			console.log(node)
+			console.log(node.innerText);
+		}
 	</script>
 </head>
 <h2>插件操作区：</h2>
@@ -46,4 +51,12 @@
 		</div>
 		<div id="my_custom_log">
 		</div>
+		<span id="my_span">
+			1234
+			<span>
+				4567
+				<span> 4422</span>
+			</span>
+			<a>1234</a>
+		</span>
 </html>
