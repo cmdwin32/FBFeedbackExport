@@ -220,6 +220,49 @@ function findAllDataInVideoContextualLayer(){
 	console.log("findAllDataInVideoContextualLayer");
 	var rootNode = document.getElementsByClassName("_5-g-");
 	console.log(rootNode);
+	var resData = [];
+	var keys = [
+		"id",
+		"类型",
+		"标题",
+		"内容",
+		"视频链接",
+		"视频时长",
+		"播放次数",
+		"作者姓名",
+		"发布日期",
+		"发布时间",
+		"分享次数",
+		"总点讚",
+		getLangText("zan"),
+		getLangText("daxin"),
+		getLangText("wa"),
+		getLangText("ha"),
+		getLangText("wu"),
+		getLangText("nu"),
+		"",
+		""
+	];	
+	resData.push(keys);
+	var index = {
+		id : 0,
+		type : 1,
+		title:2,
+		content : 3,
+		videoUrl:4,
+		videoTime:5,
+		watchTImes:6
+		author : 7,
+		date : 8,
+		time : 9,
+		shareTimes : 10,
+		totleLike : 11,
+		like : 12,
+		sheart : 13,
+		wa : 14,
+		wu : 15,
+		angry : 16
+	};
 	if (rootNode && rootNode.length > 0) {
 		var cDiv = rootNode[0].childNodes;
 		console.log(cDiv);
@@ -229,6 +272,8 @@ function findAllDataInVideoContextualLayer(){
 			// 右侧节点是回复和分享原文
 			var leftNode = cDiv[1];
 			// 查找分享正文
+			var line = {};
+			line[index.type] = "分享内容";
 			var leftNode = leftNode.getElementsByClassName("collapsible_comments");
 			console.log(leftNode);
 			if (leftNode.length > 0) {
