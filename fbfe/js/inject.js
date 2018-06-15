@@ -286,6 +286,7 @@ function findAllDataInVideoContextualLayer(){
 					if (titleNode && titleNode.length > 0) {
 						var titleStr = titleNode[0].innerText;
 						console.log("titleStr"+titleStr);
+						line[index.title] = titleStr;
 					}
 					contentNode = headNode[0].getElementsByClassName("_1rg-");
 					console.log("contentNode"+contentNode.length);
@@ -293,6 +294,7 @@ function findAllDataInVideoContextualLayer(){
 					if (contentNode && contentNode.length > 0) {
 						var contentStr = contentNode[0].innerText;
 						console.log("contentStr"+contentStr);
+						line[index.content] = contentStr;
 					}
 				}
 				
