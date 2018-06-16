@@ -75,6 +75,7 @@ function initCustomPanel()
                     <a href="javascript:findAllFeedBack(0,0,1)">>>导出分享(不展开回复)<<</a><br>
                     <a href="javascript:findAllFeedBack(0,0,2)">>>导出分享(展开所有回复)<<</a><br>
                     <a href="javascript:testSendMessage(1)">测试</a>
+                    <a href="javascript:findAllUrl()">测试</a>
                 </div>
                 <div id="my_custom_log">
                 </div>
@@ -89,8 +90,13 @@ function initCustomPanel()
 window.addEventListener("message", function(e)
 {
 	// console.log('收到消息：', e.data);
-	if(e.data && e.data.cmd == 'exportExcel') {
+	if(e.data && (
+		e.data.cmd == 'exportExcel'
+		|| e.data.cmd == "StartExportPerPage"
+		)
+	) {
 	    console.log("get message");
+	    console.log(e.data);
 		// console.log(XLSX);
 		// console.log(XLSX.utils);
 		// console.log(e.data)

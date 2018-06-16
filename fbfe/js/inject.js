@@ -997,6 +997,25 @@ function findAllData()
 	// exportExcel(resData,"FBData_"+d.toLocaleTimeString()+".xlsx")
 }
 
+// 找到所以分享的url
+function findAllUrl() {
+    // 分享的内容
+	var resData = [];
+    let cN = document.getElementsByClassName("userContentWrapper");
+    for (let idx = 0; idx < cN.length; ++idx){
+    	let timeNode = cN[idx].getElementsByClassName("timestampContent");
+    	if (timeNode && timeNode[0] && timeNode[0].parentNode && timeNode[0].parentNode.parentNode && timeNode[0].parentNode.parentNode.nodeName == "A"){
+			var url =  timeNode[0].parentNode.parentNode.getAttribute("href");
+			var title = timeNode[0].parentNode.parentNode.getAttribute("aria-label");
+			resData.push({
+				url : url,
+				title : title
+			});
+		}
+	}
+    sendMsg("StartExportPerPage",resData);
+}
+
 function exportCVSFile(resData){
 	let options = {
 	    weekday: "long", year: "numeric", month: "short",
@@ -1038,7 +1057,13 @@ function exportExcel(data,filename){
 	// XLSX.writeFile(wb, filename);
 }
 
+function sendMsg(cmd,data) {
+	window.postMessage({
+		cmd:cmd,
+		data:data
+	},'*');
+}
 
 function testSendMessage(){
-	window.postMessage({cmd:"exportExcel",date:"hellow"},'*');
+	window.postMessage({cmd:"exportExcel",data:"hellow"},'*');
 }
