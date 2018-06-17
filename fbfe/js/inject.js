@@ -1065,5 +1065,14 @@ function sendMsg(cmd,data) {
 }
 
 function testSendMessage(){
-	window.postMessage({cmd:"exportExcel",data:"hellow"},'*');
+    sendMsg('StartExportPerPage',{allUrl:['https://www.baidu.com','https://www.baidu.com','https://www.baidu.com','https://www.baidu.com']});
 }
+
+
+window.addEventListener('message',function(e){
+    if (e.data.cmd == 'startExport'){
+        sendMsg('finishExport','');
+        console.log("close");
+        window.close();
+    }
+},false);

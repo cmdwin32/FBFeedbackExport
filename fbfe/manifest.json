@@ -25,7 +25,7 @@
 	},
 	"content_scripts":[
 		{
-			"matches":["https://*.facebook.com/*"],
+			"matches":["https://*.facebook.com/*","https://www.baidu.com/"],
 			//"js":["js/lib/shim.min.js","js/lib/xlsx.full.min.js","js/content-script.js"],
 			"js":["js/content-script.js"],
 			"css":["css/main.css"],
