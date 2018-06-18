@@ -51,14 +51,20 @@ function initCustomPanel()
     console.log(window.location.href);
     let panel = document.createElement('div');
     panel.className = 'chrome-plugin-demo-panel';
+    panel.style.cssText = `z-index:  10000;`;
     if (window.location.href.indexOf("videos") > 0){
         // 视频页面
         panel.innerHTML = `
         <h2>插件操作区：</h2>
-                <div class="btn-area">
+        <style type="text/css">
+    		#GreatMountainDialog{
+    			z-index:100;
+    		}    
+		</style>
+                <div id="GreatMountainDialog">
                     <div>开始日期: <input type="date" id="startTime" /></div>
                     <div>结束日期: <input type="date" id="endTime" /></div>
-                    <a href="javascript:exportVideoFeedback(1)">>>导出视频回复<<</a><br>
+                    <a href="javascript:exportVideoFeedback(2)">>>导出视频回复<<</a><br>
                 </div>
                 <div id="my_custom_log">
                 </div>
@@ -66,16 +72,32 @@ function initCustomPanel()
         </html>
             `;
     }
+    else if(window.location.href.indexOf("photos") > 0){
+		panel.innerHTML = `
+		        <h2>插件操作区：</h2>
+                <style type="text/css">
+                    #GreatMountainDialog{
+                    z-index:10000;
+                    }    
+                </style>
+                <div id="GreatMountainDialog">
+                    <div>开始日期: <input type="date" id="startTime" /></div>
+                    <div>结束日期: <input type="date" id="endTime" /></div>
+                    <a href="javascript:exportPhotoFeedback(2)">>>圖片分析回復<</a><br>
+                </div>
+                <div id="my_custom_log">
+                </div>
+                <br/>
+        </html>
+		`;
+	}
     else{
          panel.innerHTML = `
         <h2>插件操作区：</h2>
-                <div class="btn-area">
+                <div id="GreatMountainDialog">
                     <div>开始日期: <input type="date" id="startTime" /></div>
                     <div>结束日期: <input type="date" id="endTime" /></div>
-                    <a href="javascript:findAllFeedBack(0,0,1)">>>导出分享(不展开回复)<<</a><br>
-                    <a href="javascript:findAllFeedBack(0,0,2)">>>导出分享(展开所有回复)<<</a><br>
-                    <a href="javascript:testSendMessage()">>>>>>测试接口1<<<<<</a><br>
-                    <a href="javascript:findAllUrl()">>>>>>测试接口透传<<<<<</a><br>
+                    <a href="javascript:findAllUrl()">>>>>>自动导出<<<<<</a><br>
                 </div>
                 <div id="my_custom_log">
                 </div>
@@ -89,16 +111,20 @@ function initCustomPanel()
 
 let exportCallBack = null;
 
+const forward_event_list = [
+	'exportExcel',
+	'StartExportPerPage',
+	'finishExport',
+	'ExportNotReady',
+	'autoExportIsStared',
+	'ExportPRogressUpdate',
+];
+
 window.addEventListener("message", function(e)
 {
 	// console.log('收到消息：', e.data);
-    console.log(e.data);
-	if(e.data && (
-		e.data.cmd == 'exportExcel'
-		|| e.data.cmd == "StartExportPerPage"
-        || e.data.cmd == 'finishExport'
-		)
-	) {
+    // console.log(e.data);
+	if(e.data && ( forward_event_list.indexOf(e.data.cmd) >= 0 ) ){
 	    console.log("get message");
 	    console.log(e.data);
 		// console.log(XLSX);
@@ -144,6 +170,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
         exportCallBack = sendResponse;
         console.log(exportCallBack);
         sendInJectMsg(request.cmd,'');
+	}
+	else if (request.cmd == 'autoExport'){
+    	sendInJectMsg(request.cmd,'');
 	}
 });
 
