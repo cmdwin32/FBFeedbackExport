@@ -65,6 +65,7 @@ function initCustomPanel()
                     <div>开始日期: <input type="date" id="startTime" /></div>
                     <div>结束日期: <input type="date" id="endTime" /></div>
                     <a href="javascript:exportVideoFeedback(2)">>>导出视频回复<<</a><br>
+                    <a href="javascript:ignore()">>>跳过<<</a><br>
                 </div>
                 <div id="my_custom_log">
                 </div>
@@ -84,6 +85,7 @@ function initCustomPanel()
                     <div>开始日期: <input type="date" id="startTime" /></div>
                     <div>结束日期: <input type="date" id="endTime" /></div>
                     <a href="javascript:exportPhotoFeedback(2)">>>圖片分析回復<</a><br>
+                    <a href="javascript:ignore()">>>跳过<<</a><br>
                 </div>
                 <div id="my_custom_log">
                 </div>

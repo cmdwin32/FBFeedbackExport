@@ -54,14 +54,14 @@ const keys = [
     "发布时间",
     "分享次数",
     "播放次数",
-    "总点讚",
+    "总点赞",
     getLangText("zan"),
     getLangText("daxin"),
     getLangText("wa"),
     getLangText("ha"),
     getLangText("wu"),
     getLangText("nu"),
-    ""
+    "分享链接"
 ];
 const index = {
     id : 0,
@@ -82,7 +82,8 @@ const index = {
     wa : 15,
     ha : 16,
     wu : 17,
-    nu : 18
+    nu : 18,
+    localUrl:19
 };
 
 
@@ -100,12 +101,12 @@ function  exportPhotoFeedback(type) {
 	expansPhotoPageContent(type);
 }
 
-function findAllFeedBack(startTime,endTime,type)
+function findAllFeedBack(startTime,endTime,type,callback)
 {
-	if (startTime == 0) {
+	if (!startTime||startTime == 0) {
 		startTime = document.getElementById("startTime").value;
 	}
-	if (endTime == 0) {
+	if (!endTime || endTime == 0) {
 		endTime = document.getElementById("endTime").value;
 	}
 	// 倒叙查找，开始要小于结束
@@ -116,7 +117,7 @@ function findAllFeedBack(startTime,endTime,type)
 	}
 	// console.log(startTime)
 	// console.log(endTime);
-	LoadPageWithDataRange(getTimestamp(startTime),getTimestamp(endTime),type);
+	LoadPageWithDataRange(getTimestamp(startTime),getTimestamp(endTime),type,callback);
 	// expansContent(type);
 }
 
@@ -177,7 +178,7 @@ function getTimestamp(date){
 	return Math.round(new Date(date).getTime()/1000)+n * 60; //先获得utc时间，然后根据本地的时区差值，计算本地时间
 }
 
-function LoadPageWithDataRange(startTimestamp,endTimestamp,type){
+function LoadPageWithDataRange(startTimestamp,endTimestamp,type,callBack){
 	// console.log("startTimestamp"+startTimestamp);
 	// console.log("endTimestamp"+endTimestamp);
 	let timeList = [];
@@ -206,18 +207,18 @@ function LoadPageWithDataRange(startTimestamp,endTimestamp,type){
 			getMorePageNode[0].scrollIntoView();
 			dispatch(getMorePageNode[0],"click");
 			// 加载下一页
-			setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,type);
+			setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,type,callBack);
 		}
 		else{
 			// console.log("no uiMorePager");
 			// console.log(getMorePageNode);
-			expansContent(type);
+			expansContent(type,callBack);
 		}
 	}
 	else{
 		// console.log(timeList);
 		// console.log(endTimestamp);
-		expansContent(type);
+		expansContent(type,callBack);
 	}
 }
 
@@ -244,7 +245,7 @@ function expansContent(type,callback){
 	        callback();
         }
         else{
-            findAllData();
+            //findAllData();
         }
 	}
 	else{
@@ -254,13 +255,20 @@ function expansContent(type,callback){
 		for (let i = 0; i < moreBtns.length; i++) {
 			dispatch(moreBtns[i], 'click');
 		}
-		setTimeout(expansContent,1000,type);
+		setTimeout(expansContent,1000,type,callback);
 	}
 }
 
 function expansVideoPageContent(type){
 	let moreBtns = [];
 	// 先把视频暂停
+
+    let giftNode = document.getElementById("permalink_video_pagelet");
+    if (giftNode){
+        setTimeout(autoExportFinish,1000,null);
+        // autoExportFinish(null);
+        return;
+    }
 
 	let video = document.getElementsByTagName("video")[0];
 	if (!video){
@@ -278,16 +286,36 @@ function expansVideoPageContent(type){
 
 	// 标签切换到评论
 	let tabPL = document.getElementById("u_2_u");
-	tabPL = tabPL.getElementsByTagName("span");
-	for (let idx = 0 ; idx < tabPL.length; ++idx){
-		// console.log(tabPL[idx]);
-		// console.log(tabPL[idx].innerText);
-		if (tabPL[idx].textContent.indexOf(getLangText("discuss")) >= 0) {
-			// console.log("discuss");
-			// console.log(tabPL[idx].parentNode);
-			dispatch(tabPL[idx].parentNode,"click");
-		}
-	}
+	if (tabPL){
+
+        tabPL = tabPL.getElementsByTagName("span");
+        for (let idx = 0 ; idx < tabPL.length; ++idx){
+            // console.log(tabPL[idx]);
+            // console.log(tabPL[idx].innerText);
+            if (tabPL[idx].textContent.indexOf(getLangText("discuss")) >= 0) {
+                console.log("discuss");
+                console.log("u_2_u");
+                // console.log(tabPL[idx].parentNode);
+                dispatch(tabPL[idx].parentNode,"click");
+
+            }
+        }
+    }
+    tabPL = document.getElementById("u_2_t");
+	if (tabPL){
+
+        tabPL = tabPL.getElementsByTagName("span");
+        for (let idx = 0 ; idx < tabPL.length; ++idx){
+            // console.log(tabPL[idx]);
+            // console.log(tabPL[idx].innerText);
+            if (tabPL[idx].textContent.indexOf(getLangText("discuss")) >= 0) {
+                console.log("discuss");
+                console.log("u_2_t");
+                // console.log(tabPL[idx].parentNode);
+                dispatch(tabPL[idx].parentNode,"click");
+            }
+        }
+    }
 	video.pause();
 	if (type == 2) {
 	    // 更多评论
@@ -423,8 +451,8 @@ function strNum(text){
 }
 // 从文字中找到数字
 function realNum(text){
-	// // console.log(text);
-	// // console.log(text.replace(/,/g,""));
+	console.log(text);
+	console.log(text.replace(/,/g,""));
 	if (text.indexOf(getLangText("wan")) > 0) {
 		text = text.replace(/,/g,"");
 		text = text.match(/\d+/g).map(Number);
@@ -448,22 +476,76 @@ function findAllDataInPhotoContextualLayer(){
 	let line = new Array(keys.length);
     line[index.id] = resData.length;
     line[index.type] = "分享正文";
-	// 标题和内容
+    line[index.localUrl] = window.location.href;
+    // 尝试一种奇怪的赞
+    let hasCheckedZanAndLike = false;
+    let childCNode = contentNode.childNodes[0];
+    console.log(contentNode);
+    console.log(contentNode.childNodes);
+    if (childCNode!= null && childCNode.classList.contains("fbPhotosSnowliftFeedback")) {
+        let ccNodes = childCNode.childNodes;
+        for (let i =0;i<ccNodes.length;++i){
+            if (ccNodes[i].classList.contains("UFIContainer") != true) {
+                let likeAndShare = ccNodes[i].getElementsByTagName("a");
+                for (let idxlNs = 0; idxlNs < likeAndShare.length; ++idxlNs){
+                    let text = likeAndShare[idxlNs].getAttribute("aria-label");
+                    // 如果能找到，就是赞
+                    if (text){
+                        if (text.indexOf(getLangText("zan")) >= 0) {
+                            line[index.zan] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("daxin")) >= 0){
+                            line[index.daxin] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("wa")) >= 0){
+                            line[index.wa] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("ha")) >= 0){
+                            line[index.ha] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("wu")) >= 0){
+                            line[index.wu] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("nu")) >= 0){
+                            line[index.nu] = realNum(text)[0];
+                        }
+                    }
+                    else{
+                        // 如果找不到，可能是评论和分享
+                        text = likeAndShare[idxlNs].textContent;
+                        if (text.indexOf(getLangText("share")) > 0){
+                            line[index.shareTimes] = realNum(text)[0];
+                        }
+                        else if (text.indexOf(getLangText("discuss")) > 0){
+                            line[index.discussTims] = realNum(text)[0];
+                        }
+                    }
+                }
+                resData.push(line);
+                hasCheckedZanAndLike = true;
+                break;
+            }
+        }
+    }
+    // 标题和内容
     let photoCaption = document.getElementById("fbPhotoSnowliftCaption");
     if (!photoCaption){
+        console.log("fbPhotoSnowliftCaption not found");
         return false;
     }
     photoCaption = photoCaption.getElementsByClassName("hasCaption")[0];
     if (photoCaption){
-        line[index.content] = photoCaption.textContent;
+        line[index.content] = realText(photoCaption.textContent);
     }
     let photoAuthorName = document.getElementById("fbPhotoSnowliftAuthorName");
     if (!photoAuthorName){
+        console.log("fbPhotoSnowliftAuthorName not found");
         return false;
     }
-    line[index.author] = photoAuthorName.textContent;
+    line[index.author] = realText(photoAuthorName.textContent);
     let photoTimestamp = document.getElementById("fbPhotoSnowliftTimestamp");
     if (!photoTimestamp){
+        console.log("fbPhotoSnowliftTimestamp not found");
         return false;
     }
     let timeNode = photoTimestamp.getElementsByTagName("abbr")[0];
@@ -474,14 +556,17 @@ function findAllDataInPhotoContextualLayer(){
 	// 逐条分享
 	let UFIList = contentNode.getElementsByClassName("UFIList");
 	if (UFIList.length < 0 ){
+	    console.log("UFIList is empty");
 	    return false;
     }
     UFIList = UFIList[0].childNodes;
     if (UFIList.length < 0 ){
+        console.log("UFIList child is empty");
         return false;
     }
     for (let uflIdx = 0; uflIdx < UFIList.length; ++ uflIdx){
-        if (UFIList[uflIdx].classList.contains("UFILikeSentence")){
+        if (hasCheckedZanAndLike != true && UFIList[uflIdx].classList.contains("UFILikeSentence")){
+            console.log(UFIList[uflIdx]);
             // 总赞相关
             let likeAndZan = UFIList[uflIdx].getElementsByClassName("_ipp");
             // console.log(likeAndZan);
@@ -526,10 +611,11 @@ function findAllDataInPhotoContextualLayer(){
                 }
             }
             else{
-                return false;
+                // console.log("zan _ipp is empty");
+                // return false;
             }
         }
-        else if(UFIList[uflIdx].classList.contains("UFIShareRow")){
+        else if(hasCheckedZanAndLike != true && UFIList[uflIdx].classList.contains("UFIShareRow")){
             // 分享和评论
             let node = UFIList[uflIdx].childNodes[0].childNodes;
             for (var nIdx = 0; nIdx < node.length; ++nIdx){
@@ -719,13 +805,15 @@ function findAllDataInVideoContextualLayer(){
 			let line = new Array(keys.length);
 			line[index.id] = resData.length;
 			line[index.type] = "分享内容";
+			line[index.localUrl] = window.location.href;
 			// 左侧节点是视频
 			let leftNode = cDiv[0];
 			let video = leftNode.getElementsByTagName("video")[0];
 			if (!video){
+			    console.log('video is empty')
 			    return false;
             }
-			line[index.videoUrl] = video.getAttribute("src");
+			line[index.videoUrl] = realText(video.getAttribute("src"));
 			let videoTime = leftNode.getElementsByClassName("_5qsr")[0];
 			// 直播，放弃导出
 			if (videoTime == null){
@@ -738,6 +826,7 @@ function findAllDataInVideoContextualLayer(){
 			// 查找分享正文
 			rightNode = rightNode.getElementsByClassName("collapsible_comments");
 			if (!rightNode){
+			    console.log("collapsible_comments is empty");
 			    return false;
             }
 			// // console.log(leftNode);
@@ -830,6 +919,7 @@ function findAllDataInVideoContextualLayer(){
 					}
 				}
 				else{
+				    console.log("_6899 is empty");
 				    return false;
                 }
 				resData.push(line);
@@ -843,6 +933,7 @@ function findAllDataInVideoContextualLayer(){
                         .getElementsByClassName("_j6a")[0].childNodes[0] == null
                 )
                 {
+                    console.log("UFIList or child is empty");
                     return false;
                 }
 				let discussList = document.getElementsByClassName("UFIList")[0]
@@ -1068,7 +1159,7 @@ function findAllData()
 			// // console.log("pN"+pN.length);
 		}
 		line[index.type]="分享内容";
-		line[index.content] = title;
+		line[index.content] = realText(title);
 		// // console.log("cN"+cN.length);
 		// 发布时间
 		let timeNode = nL[i].getElementsByClassName("timestampContent");
@@ -1347,7 +1438,7 @@ function findAllData()
 
 // 找到所以分享的url
 function findAllUrl() {
-    expansContent(1,function () {
+    findAllFeedBack(null,null,1,function () {
         // 分享的内容
         var resData = [];
         let cN = document.getElementsByClassName("userContentWrapper");
@@ -1419,6 +1510,14 @@ function sendMsg(cmd,data) {
 // 完成自动导出
 function autoExportFinish(resData){
 	if (isAutoExport){
+	    if (resData == null){
+	        resData = [];
+	        resData.push(keys);
+	        let line = new Array(keys.length);
+	        line[index.type]="跳过";
+	        line[index.localUrl] = window.location.url;
+	        resData.push(line);
+        }
 		isAutoExport = false;
         sendMsg('finishExport',resData);
         console.log("close");
@@ -1441,11 +1540,13 @@ function autoExportStart(){
         }
         else if (window.location.href.indexOf("posts") > 0){
             //findAllUrl();
-            autoExportFinish();// 照片墙有问题
+            setTimeout(autoExportFinish,5000);
+            // autoExportFinish();// 照片墙有问题
         }
         else{
             // 这个页面没有需要导出的东西，跳过
-            autoExportFinish();
+            // autoExportFinish();
+            setTimeout(autoExportFinish,5000);
         }
     }
 }
@@ -1463,6 +1564,13 @@ function autoExportIsStared() {
     console.log("autoExportIsStared");
     console.log(isAutoExport);
     sendMsg("autoExportIsStared","");
+}
+
+function ignore() {
+    console.log("ignore");
+    isAutoExport = true;
+    autoExportFinish(null);
+    isAutoExport = false;
 }
 
 // 完成导出
