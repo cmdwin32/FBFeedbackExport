@@ -9,13 +9,34 @@ function(req,sender,sendRsp){
 	console.log("get content-script message");
 	// console.log(req,sender,sendRsp);
 	// exportExcel(req.greeting.data,req.greeting.filename);
+
+    // popup界面传入的命令：
     if (req.cmd == "openDefaultPage") {
         // 打开默认页面
         openDefaultPage();
     }
-    else if (req.cmd == "ExportPRogressUpdate"){
-
+    else if (req.cmd == "autoExportOneWeek") {
+        // 自动导出7天
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate()-7);
+        autoExportWithDataRange(new Date(),endDate);
     }
+    else if (req.cmd == "autoExportTwoWeek") {
+        // 自动导出15天
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate()-15);
+        autoExportWithDataRange(new Date(),0);
+    }
+    else if (req.cmd == "autoExportOneMonth") {
+        // 自动导出30天
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate()-30);
+        autoExportWithDataRange(new Date(),0);
+    }
+    else if (req.cmd == "StartExportWithDateRange"){
+        autoExportWithDataRange(req.startTime,req.endTime);
+    }
+    // inject传入的命令
     else if (req.cmd == "StartExportPerPage"){
         ShowStartingNotify();
         clear();
@@ -23,8 +44,7 @@ function(req,sender,sendRsp){
         StartExportPerPage(req.data.allUrl);
     }
     else if (req.cmd == "finishExport"){
-        console.log(timeID);
-        // console.log(req.data);
+        console.log("finishExport");
         if (req.data){
             // 可能有一些页面要放弃导出
             let idx = 0;
@@ -36,8 +56,10 @@ function(req,sender,sendRsp){
             }
         }
         isExporting = false;
+        console.log(timeID);
         if (timeID != -1){
             clearTimeout(timeID);
+            timeID = -1;
         }
         FinishOnPage();
     }
@@ -48,8 +70,10 @@ function(req,sender,sendRsp){
         console.log("ExportNotReady");
         // console.log(req.data);
         isExporting = false;
+        console.log(timeID);
         if (timeID != -1){
             clearTimeout(timeID);
+            timeID = -1;
         }
         timeID = setTimeout(
             SendMessage2StartExport,
@@ -63,8 +87,10 @@ function(req,sender,sendRsp){
         console.log("autoExportIsStared");
         isExporting = true;
         console.log(isExporting);
+        console.log(timeID);
         if (timeID != -1){
             clearTimeout(timeID);
+            timeID = -1;
         }
     }
     else if(req.cmd == 'downloadFinish'){
@@ -74,11 +100,8 @@ function(req,sender,sendRsp){
             ShowFinishNotify();
         }
     }
-    else if(req.cmd == 'test'){
-        if (exportData.length == 0){
-            exportData = [[1],[2]];
-        }
-
+    else if(req.cmd == 'reDownload'){
+        // 根据您当前的数据直接打开下载页
         FinishAllPage();
     }
     else if (req.cmd == 'stop'){
@@ -160,15 +183,18 @@ function FinishOnPage() {
 }
 
 
-function SendMessage2StartExport(tab,msg) {
+function SendMessage2StartExport(tab,msg,times=0) {
     console.log(isExporting);
+    if (times > 3){
+        return;
+    }
     if (isExporting == false){
         // isExporting = true;
         console.log(tab.url);
         if (timeID != -1){
             clearTimeout(timeID);
         }
-        timeID = setTimeout(SendMessage2StartExport,1000,tab,msg);
+        timeID = setTimeout(SendMessage2StartExport,1000,tab,msg,++times);
         chrome.tabs.sendMessage(tab.id,msg);
         // chrome.tabs.query({/*active: true,*/ currentWindow: true}, function(tabs) {
         //     let found = false;
@@ -209,17 +235,17 @@ function ExportNextPage() {
         }
         let id = urlList2Export[idx2Export].id;
         let url = urlList2Export[idx2Export].url;
-        if (url.indexOf("posts") > 0) {
-            let line = new Array(20);
-            line[1] = "skip";
-            line[19] = url;
-            exportData.push(line);
-            ++idx2Export;
-            // ExportNextPage();
-            FinishOnPage();
-            return true;
-        }
-        else{
+        // if (url.indexOf("posts") > 0) {
+        //     let line = new Array(20);
+        //     line[1] = "skip";
+        //     line[19] = url;
+        //     exportData.push(line);
+        //     ++idx2Export;
+        //     // ExportNextPage();
+        //     FinishOnPage();
+        //     return true;
+        // }
+        // else{
             chrome.tabs.create(
                 {
                     url:url
@@ -245,7 +271,7 @@ function ExportNextPage() {
                     }
                 }
             );
-        }
+        // }
         // 成功打开一个页面
         return true;
     }
@@ -336,6 +362,29 @@ function  openDefaultPage() {
         {url:"https://www.facebook.com/ROVTH/photos/a.687150514781734.1073741828.685438628286256/1017223268441122/?type=3&theater"},
         function (tab) {
 
+        }
+    );
+}
+
+function autoExportWithDataRange(startTime,endTime) {
+    startTime = Utils.getTimestamp(startTime);
+    endTime = Utils.getTimestamp(endTime);
+    console.log(startTime);
+    console.log(endTime);
+    // 打开默认主页
+    let url = "https://www.facebook.com/pg/ROVTH/posts";
+    chrome.tabs.create(
+        {url:url},
+        function (tab) {
+            if (tab){
+                // 打开成功，发送自动导出消息
+                setTimeout(
+                    SendMessage2StartExport,
+                    5000,
+                    tab,
+                    {cmd:"autoExportWithDataRange",data:{startTime:startTime,endTime:endTime}}
+                );
+            }
         }
     );
 }

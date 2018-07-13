@@ -80,7 +80,7 @@ function download(filename, text) {
 }
 
 $("#download").click(e=>{
-    download("a.cvs",data);
+    exportCVSFile(data);
 })
 $("#download2").click(e=>{
     download2("a.cvs",data);

@@ -10,21 +10,9 @@ document.addEventListener('DOMContentLoaded',function()
 }
 );
 
-function indexCustomJS2(){
-	let html = "";
-	let allPaths = ["js/lib/shim.min.js","js/lib/xlsx.full.min.js","js/inject.js"];
-	for(let i = 0; i< allPaths.length; ++i){
-		let jsPath = allPaths[i];
-		html += "<script type='text/javascript' src='" + "chrome-extension://"+chrome.runtime.id+"/"+jsPath + "'></script>";
-		
-	}
-	console.log(html);
-	document.write(html);
-}
-
 // 向页面注入js执行查找逻辑
 function injectCustomJs(){
-	let allPaths = ["js/lib/shim.min.js","js/lib/xlsx.full.min.js","js/inject.js"];
+	let allPaths = ["js/config.js","js/utils.js","js/inject.js"];
 	for(let i = 0; i< allPaths.length; ++i){
 		let jsPath = allPaths[i];
 
@@ -100,6 +88,8 @@ function initCustomPanel()
                     <div>开始日期: <input type="date" id="startTime" /></div>
                     <div>结束日期: <input type="date" id="endTime" /></div>
                     <a href="javascript:findAllUrl()">>>>>>自动导出<<<<<</a><br>
+                    <a href="javascript:autoExportStart()">>>>>>测试<<<<<</a><br>
+                    <a href="javascript:ignore()">>>跳过<<</a><br>
                 </div>
                 <div id="my_custom_log">
                 </div>
@@ -111,7 +101,6 @@ function initCustomPanel()
 	document.body.appendChild(panel);
 }
 
-let exportCallBack = null;
 
 const forward_event_list = [
 	'exportExcel',
@@ -120,6 +109,7 @@ const forward_event_list = [
 	'ExportNotReady',
 	'autoExportIsStared',
 	'ExportPRogressUpdate',
+    "autoExportWithDataRange"
 ];
 
 window.addEventListener("message", function(e)
@@ -129,26 +119,11 @@ window.addEventListener("message", function(e)
 	if(e.data && ( forward_event_list.indexOf(e.data.cmd) >= 0 ) ){
 	    console.log("get message");
 	    console.log(e.data);
-		// console.log(XLSX);
-		// console.log(XLSX.utils);
-		// console.log(e.data)
-		// console.log(e.data.data)
-		// let wb = XLSX.utils.book_new();
-		// let ws = XLSX.utils.aoa_to_sheet(e.data.data.data);
-		// XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-		// XLSX.writeFile(wb, e.data.data.filename);
 		chrome.runtime.sendMessage(e.data, function(response) {
 			console.log('收到来自后台的回复：' );
 			console.log(response);
 		});
 	}
-    // else if(e.data && e.data.cmd == "finishExport"){
-	 //    console.log("exportCallback");
-	 //    console.log(exportCallBack);
-	 //    if (exportCallBack){
-	 //        exportCallBack({errCode:0});
-    //     }
-    // }
     else if(e.data && e.data.cmd == "startExport"){
 
     }
@@ -162,19 +137,20 @@ function sendInJectMsg(cmd,data) {
     },'*');
 }
 
+const listenList = [
+	"autoExportWithDataRange"
+	,"autoExport"
+	,"startExport"
+];
 // 添加与background的通讯监听
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
 {
     console.log("bg event:");
     console.log(request);
-    // console.log(sender.tab ?"from a content script:" + sender.tab.url :"from the extension");
-    if(request.cmd == 'startExport') {
-        exportCallBack = sendResponse;
-        console.log(exportCallBack);
-        sendInJectMsg(request.cmd,'');
-	}
-	else if (request.cmd == 'autoExport'){
-    	sendInJectMsg(request.cmd,'');
+    console.log(listenList.includes(request.cmd));
+    if (listenList.includes(request.cmd)){
+    	console.log("send:"+request.cmd);
+    	sendInJectMsg(request.cmd,request.data);
 	}
 });
 
