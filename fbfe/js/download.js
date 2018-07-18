@@ -27,31 +27,7 @@ if (chrome && chrome.runtime && chrome.runtime.onMessage){
             });
         }
     },false);
-    function exportCVSFile(resData){
-        let options = {
-            weekday: "long", year: "numeric", month: "short",
-            day: "numeric", hour: "2-digit", minute: "2-digit"
-        };
-        let d = new Date();
-        let fileName = "FBData_"+d.toLocaleTimeString("ch-CN",options)+".csv";
-        let cvsData = "";
-        for(let i = 0; i < resData.length; ++i){
-            if (resData[i]) {
 
-                for (let j = 0; j < resData[i].length; ++j){
-                    if (resData[i][j]) {
-                        cvsData += resData[i][j]+",";
-                    }
-                    else{
-                        cvsData += ",";
-                    }
-                }
-            }
-            cvsData += "\n";
-        }
-        console.log(cvsData);
-        download2(fileName,cvsData);
-    }
 }
 
 function download2(filename,data) {
@@ -63,7 +39,40 @@ function download2(filename,data) {
     console.log(text.length);
     writer.write(text).then(()=>{writer.close()});
 }
+function exportCVSFile(resData){
+    let options = {
+        weekday: "long", year: "numeric", month: "short",
+        day: "numeric", hour: "2-digit", minute: "2-digit"
+    };
+    let d = new Date();
+    let fileName = "FBData_"+d.toLocaleTimeString("ch-CN",options)+".csv";
+    let cvsData = "";
+    // for (let i =0;i < config.keys.length; ++i){
+    //     cvsData += config.keys[i]+",";
+    // }
+    // console.log(config.keys);
+    // console.log(cvsData);
+    // cvsData += "\n";
+    if (!resData){
+        resData = [];
+    }
+    for(let i = 0; i < resData.length; ++i){
+        if (resData[i]) {
 
+            for (let j = 0; j < resData[i].length; ++j){
+                if (resData[i][j]) {
+                    cvsData += resData[i][j]+",";
+                }
+                else{
+                    cvsData += ",";
+                }
+            }
+        }
+        cvsData += "\n";
+    }
+    console.log(cvsData);
+    download2(fileName,cvsData);
+}
 // 从内存中下载文件
 function download(filename, text) {
     
@@ -81,7 +90,4 @@ function download(filename, text) {
 
 $("#download").click(e=>{
     exportCVSFile(data);
-})
-$("#download2").click(e=>{
-    download2("a.cvs",data);
 })

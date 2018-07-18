@@ -3,37 +3,53 @@ let exportData = [];
 let timeID = -1;
 let isExporting = false;
 let downloadTab = null;
+let gNeedExpand = false;
 // 接受content-script的消息
 chrome.runtime.onMessage.addListener(
 function(req,sender,sendRsp){
 	console.log("get content-script message");
+	console.log(req);
 	// console.log(req,sender,sendRsp);
 	// exportExcel(req.greeting.data,req.greeting.filename);
-
     // popup界面传入的命令：
     if (req.cmd == "openDefaultPage") {
         // 打开默认页面
         openDefaultPage();
+        if (req.needExpand !== null && req.needExpand != undefined){
+            gNeedExpand = req.needExpand;
+        }
     }
     else if (req.cmd == "autoExportOneWeek") {
         // 自动导出7天
+        if (req.needExpand !== null && req.needExpand != undefined){
+            gNeedExpand = req.needExpand;
+        }
         let endDate = new Date();
         endDate.setDate(endDate.getDate()-7);
         autoExportWithDataRange(new Date(),endDate);
     }
     else if (req.cmd == "autoExportTwoWeek") {
         // 自动导出15天
+        if (req.needExpand !== null && req.needExpand != undefined){
+            gNeedExpand = req.needExpand;
+        }
         let endDate = new Date();
         endDate.setDate(endDate.getDate()-15);
-        autoExportWithDataRange(new Date(),0);
+        autoExportWithDataRange(new Date(),endDate);
     }
     else if (req.cmd == "autoExportOneMonth") {
         // 自动导出30天
+        if (req.needExpand !== null && req.needExpand != undefined){
+            gNeedExpand = req.needExpand;
+        }
         let endDate = new Date();
         endDate.setDate(endDate.getDate()-30);
-        autoExportWithDataRange(new Date(),0);
+        autoExportWithDataRange(new Date(),endDate);
     }
     else if (req.cmd == "StartExportWithDateRange"){
+        if (req.needExpand !== null && req.needExpand != undefined){
+            gNeedExpand = req.needExpand;
+        }
         autoExportWithDataRange(req.startTime,req.endTime);
     }
     // inject传入的命令
@@ -48,10 +64,16 @@ function(req,sender,sendRsp){
         if (req.data){
             // 可能有一些页面要放弃导出
             let idx = 0;
-            if (exportData.length > 0){
-                idx = 1;
-            }
+
             for (; idx < req.data.length ; ++ idx){
+                if (idx2Export == 0 && idx == 0){
+                }
+                else{
+                    req.data[idx][config.index.totleInteractiveTimes] =
+                        0 + req.data[idx][config.index.totleLike]
+                        + req.data[idx][config.index.shareTimes]
+                        + req.data[idx][config.index.discussTims];
+                }
                 exportData.push(req.data[idx]);
             }
         }
@@ -79,7 +101,7 @@ function(req,sender,sendRsp){
             SendMessage2StartExport,
                 1000,
                 urlList2Export[idx2Export].tab,
-                {cmd:"startExport"}
+                {cmd:"startExport",titleData:(idx2Export==0),needExpand:gNeedExpand}
         )
         ;
     }
@@ -105,7 +127,19 @@ function(req,sender,sendRsp){
         FinishAllPage();
     }
     else if (req.cmd == 'stop'){
-
+        // https://www.facebook.com/ROVTH/videos/1051723454991103/
+    }
+    else if (req.cmd == 'reTry'){
+        sendMsg2CurrentPage({cmd:"reStartExport",titleData:(idx2Export==0)});
+    }
+    else  if (req.cmd == "ignore") {
+        sendMsg2CurrentPage({cmd:"ignore"});
+    }
+    else if (req.cmd == "nextpage"){
+        ExportNextPage();
+    }
+    else if (req.cmd == "finishpage"){
+        FinishOnPage();
     }
 	if (sendRsp) {
 		sendRsp(req);
@@ -185,7 +219,7 @@ function FinishOnPage() {
 
 function SendMessage2StartExport(tab,msg,times=0) {
     console.log(isExporting);
-    if (times > 3){
+    if (times > 5){ // 最多重试5次，每次等待时间都要变长
         return;
     }
     if (isExporting == false){
@@ -194,7 +228,8 @@ function SendMessage2StartExport(tab,msg,times=0) {
         if (timeID != -1){
             clearTimeout(timeID);
         }
-        timeID = setTimeout(SendMessage2StartExport,1000,tab,msg,++times);
+        timeID = setTimeout(SendMessage2StartExport,1000*(times+1),tab,msg,++times);
+        console.log(msg);
         chrome.tabs.sendMessage(tab.id,msg);
         // chrome.tabs.query({/*active: true,*/ currentWindow: true}, function(tabs) {
         //     let found = false;
@@ -257,7 +292,11 @@ function ExportNextPage() {
                         let page = getPageInfoByID(id);
                         if (page){
                             page.tab = tab;
-                            SendMessage2StartExport(tab,{cmd:"startExport"});
+                            let req = {cmd:"startExport",needExpand:gNeedExpand};
+                            if (idx2Export == 0){
+                                req.titleData = true;
+                            }
+                            SendMessage2StartExport(tab,req);
                         }
                         else{
                             console.log("tab is null");
@@ -382,7 +421,7 @@ function autoExportWithDataRange(startTime,endTime) {
                     SendMessage2StartExport,
                     5000,
                     tab,
-                    {cmd:"autoExportWithDataRange",data:{startTime:startTime,endTime:endTime}}
+                    {cmd:"autoExportWithDataRange",data:{startTime:startTime,endTime:endTime},needExpand:gNeedExpand}
                 );
             }
         }

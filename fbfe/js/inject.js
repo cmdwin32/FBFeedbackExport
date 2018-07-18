@@ -4,25 +4,12 @@ let isAutoExport = false;
 
 function findAllFeedBack(startTime,endTime,callback)
 {
-	if (!startTime||startTime === 0) {
-		startTime = document.getElementById("startTime").value;
-	}
-	if (!endTime || endTime === 0) {
-		endTime = document.getElementById("endTime").value;
-	}
-	// 倒叙查找，开始要小于结束
-	if (startTime < endTime) {
-		let t = startTime;
-		startTime = endTime;
-		endTime = t;
-	}
-	console.log(startTime)
-	console.log(endTime);
-	LoadPageWithDataRange(Utils.getTimestamp(startTime),Utils.getTimestamp(endTime),callback);
+	LoadPageWithDataRange(startTime,endTime,callback);
 }
 
 
-
+let gTitleData = null;
+let gNoEXpand = false; // 不展开
 
 
 
@@ -44,6 +31,9 @@ function LoadPageWithDataRange(startTimestamp,endTimestamp,callBack){
 			}
 		}
 	}
+	console.log(timeList)
+    console.log(timeList[timeList.length-1]);
+	console.log(endTimestamp);
 	// 如果没有加载到指定的结束时间，就调用页面的继续加载接口
 	if (timeList[timeList.length-1] > endTimestamp) {
 		// 直接查询物理位置最后一个，这样可以避免置顶的帖子很旧的问题
@@ -77,6 +67,7 @@ function expansPostContent(){
     // 处理照片墙
     // 首先找到和host相同的分享
     let cN = document.getElementsByClassName("userContentWrapper");
+    console.log(cN);
     for (let idx = 0; idx < cN.length; ++idx){
         let timeNode = cN[idx].getElementsByClassName("timestampContent");
         if (timeNode && timeNode[0] && timeNode[0].parentNode && timeNode[0].parentNode.parentNode && timeNode[0].parentNode.parentNode.nodeName === "A"){
@@ -107,12 +98,12 @@ function expansPostContent(){
                 }
                 console.log(moreBtns);
                 console.log(skipCount);
-                if (expBtns.length == 0 && (moreBtns.length - skipCount) ==0){
+                if  (gNoEXpand || (expBtns.length == 0 && (moreBtns.length - skipCount) ==0)){
                     // 没有更多的内容需要展开，开始导出内容
                     if(findAllDataInPostContentualLayer(cN[idx])!= true){
                         console.log("findAllDataInPostContentualLayer has some error")
                         // 有报错，终止
-                        finishExport(null);
+                        autoExportNotReady('');
                     }
                 }
                 else{
@@ -140,6 +131,10 @@ function expansPostContent(){
                     setTimeout(expansPostContent,1000,);
                 }
                 break;
+            }
+            else{
+                // 找不到就跳过该页
+                finishExport(null);
             }
         }
     }
@@ -231,7 +226,7 @@ function expansVideoPageContent(){
 
     console.log(moreBtns);
 	// console.log("moreBtns"+moreBtns.length);
-	if (moreBtns.length >0) {
+	if ( gNoEXpand != true && moreBtns.length >0) {
 		for(let idx = 0 ; idx < moreBtns.length; ++idx){
 			dispatch(moreBtns[idx], 'click');
 		}
@@ -285,7 +280,7 @@ function expansPhotoPageContent() {
             moreBtns.push(moreText[idx]);
         }
         console.log(moreBtns.length);
-        if (moreBtns.length > 0){
+        if ( gNoEXpand != true && moreBtns.length > 0){
             console.log(moreBtns);
         	for (let mbIdx = 0; mbIdx < moreBtns.length; ++ mbIdx){
         		dispatch(moreBtns[mbIdx],'click');
@@ -307,9 +302,12 @@ function findAllDataInPhotoContextualLayer(){
 	// 获取所以分享的创建时间
 	let contentNode = document.getElementById("fbPhotoSnowliftFeedback");
 	let resData = [];
+    if (gTitleData){
+        resData.push(config.keys);
+    }
 	let line = new Array(config.keys.length);
-    line[config.index.id] = resData.length;
-    line[config.index.type] = "分享正文";
+    line[config.index.id] = 0;
+    line[config.index.type] = "分享内容";
     line[config.index.localUrl] = window.location.href;
     // 尝试一种奇怪的赞
     let hasCheckedZanAndLike = false;
@@ -353,9 +351,25 @@ function findAllDataInPhotoContextualLayer(){
                         else if (text.indexOf(Utils.getLangText("discuss")) > 0){
                             line[config.index.discussTims] = Utils.realNum(text)[0];
                         }
+                        else{
+                            if (
+                                text.indexOf(Utils.getLangText("share")) >= 0
+                                || text.indexOf(Utils.getLangText("discuss")) >= 0
+                                || text.indexOf(Utils.getLangText("zan")) >= 0
+                            ) {
+                                continue;
+                            }
+                            // 都找不到那就是总赞
+                            let num = Utils.realNum(likeAndShare[idxlNs].childNodes[0].textContent)[0];
+                            if (num > 0){
+                                line[config.index.totleLike] = Utils.realNum(likeAndShare[idxlNs].childNodes[0].textContent)[0];
+                            }
+                        }
                     }
                 }
                 resData.push(line);
+                // console.log(line);
+                line[config.index.totleInteraction] = line[config.index.discussTims] + line[config.index.shareTimes] + line[config.index.totleLike];
                 hasCheckedZanAndLike = true;
                 break;
             }
@@ -384,7 +398,7 @@ function findAllDataInPhotoContextualLayer(){
     }
     let timeNode = photoTimestamp.getElementsByTagName("abbr")[0];
     let time = timeNode.getAttribute("title");
-    time = time.split(' ');
+    time = Utils.getDateFromString(time);
     line[config.index.date] = time[0];
     line[config.index.time] = time[1];
 	// 逐条分享
@@ -475,7 +489,7 @@ function findAllDataInPhotoContextualLayer(){
                     // 评论的时间
                     let timeNode = CNodes[cnIdx].getElementsByClassName("livetimestamp")[0];
                     let time = timeNode.getAttribute("title");
-                    time = time.split(' ');
+                    time = Utils.getDateFromString(time);
                     line[config.index.date] = time[0];
                     line[config.index.time] = time[1];
                     // 有文字的回复
@@ -549,7 +563,7 @@ function findAllDataInPhotoContextualLayer(){
                         // 评论的时间
                         let timeNode = l2CNode[l2cnIdx].getElementsByClassName("livetimestamp")[0];
                         let time = timeNode.getAttribute("title");
-                        time = time.split(' ');
+                        time = Utils.getDateFromString(time);
                         line[config.index.date] = time[0];
                         line[config.index.time] = time[1];
                         // 文字回复
@@ -629,6 +643,9 @@ function findAllDataInVideoContextualLayer(){
 	let rootNode = document.getElementsByClassName("_5-g-");
 	// console.log(rootNode);
 	let resData = [];
+    if (gTitleData){
+        resData.push(config.keys);
+    }
 
 	if (rootNode && rootNode.length > 0) {
 		let cDiv = rootNode[0].childNodes;
@@ -646,13 +663,6 @@ function findAllDataInVideoContextualLayer(){
 			    return false;
             }
 			line[config.index.videoUrl] = Utils.realText(video.getAttribute("src"));
-			let videoTime = leftNode.getElementsByClassName("_5qsr")[0];
-			// 直播，放弃导出
-			if (videoTime === null){
-			    autoExportFinish(null);
-			    return true;
-            }
-			line[config.index.videoTime] = Utils.sec2time(Utils.realNum(videoTime.getAttribute("playbackdurationtimestamp"))[0]);
 			// 右侧节点是回复和分享原文
 			let rightNode = cDiv[1];
 			// 查找分享正文
@@ -667,7 +677,7 @@ function findAllDataInVideoContextualLayer(){
 				// 发布时间
 				let timeNode = rightNode.getElementsByClassName("timestamp")[0];
 				let time = timeNode.getAttribute("title");
-				time = time.split(' ');
+				time = Utils.getDateFromString(time);
 				line[config.index.date] = time[0];
 				line[config.index.time] = time[1];
 
@@ -754,7 +764,32 @@ function findAllDataInVideoContextualLayer(){
 				    console.log("_6899 is empty");
 				    return false;
                 }
+
+                // 评论条数
+                let discussNode = document.getElementsByClassName("UFILastCommentComponent")[0];
+				if  (discussNode)
+                {
+                    discussNode = discussNode.getElementsByClassName("UFIPagerCount")[0];
+                    if (discussNode){
+                        let discussCount = discussNode.textContent.split("/")
+                        if (discussCount.length > 1){
+                            discussCount = discussCount[1];
+                            line[config.index.discussTims] = Utils.realNum(discussCount)[0];
+                        }
+                    }
+                }
+
+                let videoTime = leftNode.getElementsByClassName("_5qsr")[0];
+                // 直播，放弃导出
+                if (videoTime){
+                    line[config.index.videoTime] = Utils.sec2time(Utils.realNum(videoTime.getAttribute("playbackdurationtimestamp"))[0]);
+                }
+                line[config.index.totleInteraction] = line[config.index.discussTims] + line[config.index.shareTimes] + line[config.index.totleLike];
 				resData.push(line);
+				if (!videoTime){
+                    autoExportFinish(resData);
+                    return true;
+                }
 				// console.log("title");
 				// console.log(resData);
 				// 评论
@@ -848,7 +883,7 @@ function findAllDataInVideoContextualLayer(){
 						let timeNode =  discussList[discussIdx]
 							.getElementsByClassName("livetimestamp")[0];
 						let time = timeNode.getAttribute("title");
-						time = time.split(' ');
+						time = Utils.getDateFromString(time);
 						line[config.index.date] = time[0];
 						line[config.index.time] = time[1];
 						// console.log(line);
@@ -923,7 +958,7 @@ function findAllDataInVideoContextualLayer(){
 							// 回复时间
 							let timeNode = UFINode[stIdx].getElementsByClassName("livetimestamp")[0];
 							let time = Utils.realText(timeNode.getAttribute("title"));
-							time = time.split(' ');
+							time = Utils.getDateFromString(time);
 							line[config.index.date] = time[0];
 							line[config.index.time] = time[1];
 							resData.push(line);
@@ -947,14 +982,17 @@ function findAllDataInPostContentualLayer(element) {
     console.log(shareText);
     console.log(shareText.length);
     let resData = [];
+    if (gTitleData){
+        resData.push(config.keys);
+    }
     let line = new Array(config.keys.length);
-    line[config.index.id] = resData.length;
+    line[config.index.id] = 0;
     line[config.index.type] = "分享内容";
     line[config.index.localUrl] = window.location.href;
     if (shareText.length > 0) {
         shareText = shareText[0];
         console.log(shareText);
-        line[config.index.content] = shareText.textContent;
+        line[config.index.content] = Utils.realText(shareText.innerText);
     }
     let timeNode = element.getElementsByClassName("timestampContent");
     console.log(timeNode);
@@ -968,8 +1006,8 @@ function findAllDataInPostContentualLayer(element) {
         console.log("error time format");
         console.log(timeNode);
     }
-    let UFIContainer = element.getElementsByClassName("UFIContainer ")[0];
-    let likeAndShare = UFIContainer.parentNode.childNodes[0];
+    let likeAndShare = element.getElementsByClassName("_ipp")[0];
+    likeAndShare = likeAndShare.childNodes[0];
     let checkStr = "";
     likeAndShare = likeAndShare.getElementsByTagName("a");
     console.log(likeAndShare);
@@ -985,10 +1023,22 @@ function findAllDataInPostContentualLayer(element) {
             )
         }
         else{
-            line = Utils.shareCheckAndPutInLine(likeAndShare[idx].textContent,line);
+
+            if (likeAndShare[idx] && likeAndShare[idx].childNodes && likeAndShare[idx].childNodes[0]){
+                line[config.index.totleLike] = Utils.realNum(likeAndShare[idx].childNodes[0].textContent)[0];
+            }
         }
     }
+    let shareAndDiscuss = element.getElementsByClassName("_ipo")[0];
+    shareAndDiscuss = shareAndDiscuss.getElementsByTagName("a");
+    for (var idx = 0;idx < shareAndDiscuss.length; ++ idx){
+        line = Utils.shareCheckAndPutInLine(shareAndDiscuss[idx].textContent,line);
+    }
+
+    line[config.index.totleInteraction] = line[config.index.discussTims] + line[config.index.shareTimes] + line[config.index.totleLike];
     resData.push(line);
+    console.log(line);
+    // return false;
     console.log(element.getElementsByClassName("UFIList"));
     // 完成标题的导出
     let UFIList = element.getElementsByClassName("UFIList");
@@ -1084,6 +1134,9 @@ function findAllDataInPostContentualLayer(element) {
             }
 
         }
+        else{
+
+        }
     } 
 
     console.log(resData);
@@ -1098,15 +1151,18 @@ function autoExportFinish(resData){
 	if (isAutoExport){
 	    if (resData === null){
 	        resData = [];
-	        resData.push(config.keys);
+	        if (gTitleData){
+                resData.push(config.keys);
+            }
 	        let line = new Array(config.keys.length);
 	        line[config.index.type]="跳过";
-	        line[config.index.localUrl] = window.location.url;
+	        line[config.index.localUrl] = window.location.href;
 	        resData.push(line);
         }
 		isAutoExport = false;
         sendMsg('finishExport',resData);
-        closeWindow();
+        setTimeout(closeWindow,1);
+        // closeWindow();
         // window.open(window.location.href, "_self").close();
     }
 }
@@ -1162,6 +1218,8 @@ function autoExportIsStared() {
 
 // 完成导出
 function finishExport(resData){
+    // console.error(resData);
+    // return;
     autoExportFinish(resData);
 }
 
@@ -1169,14 +1227,24 @@ function finishExport(resData){
 
 // 通讯接口
 window.addEventListener('message',function(e){
-    // console.log("inject get message:")
-    // console.log(e);
     if (e.data.cmd === 'startExport'){
+        // console.log("inject get message:")
+        // console.log(e);
+        gNoEXpand = e.data.needExpand !== true;
+        // console.log(gNoEXpand);
+        gTitleData = e.data.titleData;
+        autoExportStart();
+    }
+    else if (e.data.cmd === "reStartExport"){
+        gTitleData = e.data.titleData;
+        gNoEXpand = e.data.needExpand !== true;
+        isAutoExport = false;
         autoExportStart();
     }
     else if (e.data.cmd === "autoExportWithDataRange"){
-        // console.log("autoExportWithDataRange");
-        // console.log(e.data);
+        console.log("autoExportWithDataRange");
+        console.log(e.data);
+        gNoEXpand = e.data.needExpand !== true;
         // 根据传入的时间获得需要导出的全部链接，并开始导出
         if (e.data.data && e.data.data.startTime && e.data.data.endTime){
             if (isAutoExport == false){
@@ -1188,7 +1256,10 @@ window.addEventListener('message',function(e){
         else{
             console.log(e.data);
         }
-    } 
+    }
+    else if (e.data.cmd === "ignore"){
+        ignore();
+    }
 },false);
 
 // 发送事件到工具后台
@@ -1214,6 +1285,28 @@ function dispatch(el, type){
 
 // 找到所以分享的url
 function findAllUrl(startTime=null,endTime=null) {
+    console.log(startTime)
+    console.log(endTime);
+    if (!startTime||startTime === 0) {
+        alert("start time is null");
+        return false;
+    }
+    if (!endTime || endTime === 0) {
+        alert("end time is null");
+        return false;
+    }
+    // 倒叙查找，开始要大于结束
+    if (startTime < endTime) {
+        let t = startTime;
+        startTime = endTime;
+        endTime = t;
+    }
+    console.log(startTime)
+    console.log(endTime);
+    startTime = Utils.getTimestamp(startTime);
+    // 开始时加一天
+    startTime = startTime + 60 * 60 * 24;
+    endTime = Utils.getTimestamp(endTime)
     findAllFeedBack(startTime,endTime,function () {
         // 分享的内容
         let resData = [];
@@ -1223,14 +1316,19 @@ function findAllUrl(startTime=null,endTime=null) {
             if (timeNode && timeNode[0] && timeNode[0].parentNode && timeNode[0].parentNode.parentNode && timeNode[0].parentNode.parentNode.nodeName === "A"){
                 let url =  timeNode[0].parentNode.parentNode.getAttribute("href");
                 let title = timeNode[0].parentNode.parentNode.getAttribute("aria-label");
-                resData.push({
-                    url : url,
-                    title : title
-                });
+                let time = timeNode[0].parentNode.getAttribute("data-utime");
+                console.log(time);
+                if (time < startTime && time > endTime){
+                    resData.push({
+                        url : url,
+                        title : title,
+                        time : time,
+                    });
+                }
             }
         }
         console.log(resData);
-        sendMsg("StartExportPerPage",{allUrl:resData});
+        sendMsg("StartExportPerPage",{allUrl:resData,});
     });
 
 }

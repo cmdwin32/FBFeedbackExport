@@ -5,20 +5,45 @@
 </head>
 <body>
     <div class="btn-area">
+        <div>
+            <input type="checkbox" id="needExpand" name="feature"
+                   value="needExpand" />
+            <label for="needExpand">展开导出</label>
+        </div>
         <div>开始日期: <input type="date" id="startTime" /></div>
         <div>结束日期: <input type="date" id="endTime" /></div>
         <a href="#" id="autoExport">>>导出分享<<</a><br>
         <a href="#" id="autoExportOneWeek">>>导出最近7天<<</a><br>
         <a href="#" id="autoExportTwoWeek">>>导出最近15天<<</a><br>
         <a href="#" id="autoExportOneMonth">>>导出最近30天<<</a><br>
-        <a href="#" id="reDownload" >>>重新输出结果<<</a>
-        <a href="#" id="test" >>>测试<<</a>
+        <a href="#" id="reDownload" >>>重新输出结果<<</a><br/>
+        <span >控制：</span>
+        <hr>
+        <span>卡在导出页面时</span>
+        <br>
+        <a href="#" id="reTry" >>>重试当前页面<<</a><br/>
+        <hr>
+        <a href="#" id="ignore" >>>跳过当前页面<<</a><br/>
+        <hr>
+        <span>卡在总览页面时</span>
+        <br>
+        <a href="#" id="nextpage" >>>导出下一页<<</a><br/>
+        <hr>
+        <a href="#" id="finishpage" >>>跳过下一页<<</a><br/>
+        <hr>
+    </div>
+    <div>
+        <span >导出单页：</span>
+        <input id="exportUrl">
+        <a href="#" id="exportOnePage" >>>导出单页<<</a>
+        <hr>
     </div>
     <div id="my_custom_log">
     </div>
     <br/>
 	<script type="text/javascript" src="../js/lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../js/popup.js"></script>
+	<script type="text/javascript" src="../js/config.js"></script>
 	<!--<script type="text/javascript" src="../js/background.js"></script>-->
 </body>
 </html>

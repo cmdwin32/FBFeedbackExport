@@ -50,12 +50,12 @@ const config ={
         content : 3,
         videoUrl:4,
         videoTime:5,
-        discussTims:6,
+        playTimes:6,
         author : 7,
         date : 8,
         time : 9,
         shareTimes : 10,
-        playTimes : 11,
+        discussTims : 11,
         totleLike : 12,
         zan : 13,
         daxin : 14,
@@ -63,7 +63,8 @@ const config ={
         ha : 16,
         wu : 17,
         nu : 18,
-        localUrl:19
+        localUrl:19,
+        totleInteractiveTimes:20,
     },
     langType : "chs",
 
@@ -85,12 +86,12 @@ config.keys = [
     "内容",
     "视频链接",
     "视频时长",
-    "评论次数",
+    "播放次数",
     "作者姓名",
     "发布日期",
     "发布时间",
     "分享次数",
-    "播放次数",
+    "评论次数",
     "总点赞",
     getLangText("zan"),
     getLangText("daxin"),
@@ -98,5 +99,9 @@ config.keys = [
     getLangText("ha"),
     getLangText("wu"),
     getLangText("nu"),
-    "分享链接"
+    "分享链接",
+    "总互动次数",
 ];
+
+console.log(document.charset)
+console.log(config.keys);

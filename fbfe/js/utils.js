@@ -32,17 +32,17 @@ class Utils{
     // 从文字中找到数字
     static realNum (text){
         if (!text){
-            return null;
+            return [0];
         }
         console.log(text);
         console.log(text.replace(/,/g,""));
         if (text.indexOf(getLangText("wan")) > 0) {
             text = text.replace(/,/g,"");
             text = text.match(/\d+/g).map(Number);
-            text = text.join('.');
-            text = text + "W";
+            // text = text.join('.');
+            // text = text + "W";
             // // console.log(text)
-            // text = text[0]*10000+text[1]*1000;
+            text = text[0]*10000+text[1]*1000;
             // // console.log(text);
             return [text];
         }
@@ -52,7 +52,7 @@ class Utils{
             return res.map(Number);
         }
         else{
-            return null;
+            return [0];
         }
     }
     static sec2time  (s) {
@@ -139,6 +139,9 @@ class Utils{
         console.log("likeCheckAndPutInLine");
         console.log(key);
         console.log(value);
+        if (!key || !value){
+            return line;
+        }
         for (var idx = config.index.zan;idx <= config.index.nu;++idx){
             if (key.indexOf(config.keys[idx]) > 0){
                 line[idx] = value;
@@ -152,10 +155,10 @@ class Utils{
     static  shareCheckAndPutInLine(str,line){
         console.log("shareCheckAndPutInLine");
         console.log(str);
-        if (str.indexOf(config.getLangText("share"))>0) {
+        if (str.indexOf(getLangText("share"))>0) {
             line[config.index.shareTimes] = Utils.realNum(str)[0];
         }
-        else if(str.indexOf(config.getLangText("discuss")) > 0 ){
+        else if(str.indexOf(getLangText("discuss")) > 0 ){
             line[config.index.discussTims] = Utils.realNum(str)[0];
         }
         console.log(line);

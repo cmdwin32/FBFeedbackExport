@@ -5,7 +5,7 @@ console.log("fbfe-content-script-load-succesfull");
 document.addEventListener('DOMContentLoaded',function()
 {
 	injectCustomJs();
-	initCustomPanel();
+	// initCustomPanel();
 	console.log("dom loaded");
 }
 );
@@ -109,7 +109,9 @@ const forward_event_list = [
 	'ExportNotReady',
 	'autoExportIsStared',
 	'ExportPRogressUpdate',
-    "autoExportWithDataRange"
+    "autoExportWithDataRange",
+	"ignore",
+    "reStartExport"
 ];
 
 window.addEventListener("message", function(e)
@@ -130,17 +132,16 @@ window.addEventListener("message", function(e)
 }, false);
 
 // 发送消息到inject
-function sendInJectMsg(cmd,data) {
-    window.postMessage({
-        cmd:cmd,
-        data:data
-    },'*');
+function sendInJectMsg(req) {
+    window.postMessage(req
+        ,'*');
 }
 
 const listenList = [
 	"autoExportWithDataRange"
 	,"autoExport"
 	,"startExport"
+    ,"reStartExport"
 ];
 // 添加与background的通讯监听
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
@@ -150,7 +151,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
     console.log(listenList.includes(request.cmd));
     if (listenList.includes(request.cmd)){
     	console.log("send:"+request.cmd);
-    	sendInJectMsg(request.cmd,request.data);
+    	sendInJectMsg(request);
 	}
 });
 
