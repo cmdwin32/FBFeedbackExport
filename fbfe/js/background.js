@@ -406,6 +406,7 @@ function  openDefaultPage() {
 }
 
 function autoExportWithDataRange(startTime,endTime) {
+    clear();
     startTime = Utils.getTimestamp(startTime);
     endTime = Utils.getTimestamp(endTime);
     console.log(startTime);

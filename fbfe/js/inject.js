@@ -37,20 +37,30 @@ function LoadPageWithDataRange(startTimestamp,endTimestamp,callBack){
 	// 如果没有加载到指定的结束时间，就调用页面的继续加载接口
 	if (timeList[timeList.length-1] > endTimestamp) {
 		// 直接查询物理位置最后一个，这样可以避免置顶的帖子很旧的问题
-		let getMorePageNode = document.getElementsByClassName("uiMorePager");
-		if (getMorePageNode && getMorePageNode.length > 0) {
-			getMorePageNode[0].scrollIntoView();
-			dispatch(getMorePageNode[0],"click");
-			// 加载下一页
-			setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
-		}
-		else{
-			// console.log("no uiMorePager");
-			// console.log(getMorePageNode);
-            if (callBack){
-                callBack();
-            }
-		}
+		// let getMorePageNode = document.getElementsByClassName("uiMorePager");
+		// console.log(getMorePageNode);
+		// if (getMorePageNode && getMorePageNode.length > 0) {
+		//     for (var idx = 0 ; idx < getMorePageNode.length; ++ idx){
+         //        // getMorePageNode[idx].scrollIntoView();
+         //        // console.log("scrollIntoView:"+idx);
+         //        // console.log(getMorePageNode[idx]);
+         //        // dispatch(getMorePageNode[idx],"click");
+         //    }
+		// 	// 加载下一页
+		// 	setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
+		// }
+		// else{
+		// 	// console.log("no uiMorePager");
+		// 	// console.log(getMorePageNode);
+         //    if (callBack){
+         //        callBack();
+         //    }
+		// }
+        // 直接滚到页底
+        window.scrollTo(0, document.body.scrollHeight);
+        // 加载下一页
+        setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
+
 	}
 	else{
 		// console.log(timeList);
@@ -359,10 +369,14 @@ function findAllDataInPhotoContextualLayer(){
                             ) {
                                 continue;
                             }
+                            console.log(likeAndShare[idxlNs]);
                             // 都找不到那就是总赞
-                            let num = Utils.realNum(likeAndShare[idxlNs].childNodes[0].textContent)[0];
+                            let num = Utils.realNum(likeAndShare[idxlNs].childNodes[0].textContent);
+                            console.log(num);
+                            num = num[0];
+                            console.log(num);
                             if (num > 0){
-                                line[config.index.totleLike] = Utils.realNum(likeAndShare[idxlNs].childNodes[0].textContent)[0];
+                                line[config.index.totleLike] = num;
                             }
                         }
                     }

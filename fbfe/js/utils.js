@@ -34,16 +34,21 @@ class Utils{
         if (!text){
             return [0];
         }
-        console.log(text);
-        console.log(text.replace(/,/g,""));
+        // console.log(text);
+        // console.log(text.replace(/,/g,""));
+        // console.log(getLangText("wan"));
+        // console.log(text.indexOf(getLangText("wan")));
         if (text.indexOf(getLangText("wan")) > 0) {
             text = text.replace(/,/g,"");
             text = text.match(/\d+/g).map(Number);
             // text = text.join('.');
             // text = text + "W";
-            // // console.log(text)
-            text = text[0]*10000+text[1]*1000;
-            // // console.log(text);
+            // console.log(text)
+            text = text[0]*10000;
+            if (text.length > 1 ){
+                text += text[1]*1000;
+            }
+            // console.log(text);
             return [text];
         }
         // // console.log(text.replace(/,/g,"").match(/\d+/g).map(Number));
