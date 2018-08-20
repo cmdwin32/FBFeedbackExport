@@ -6,16 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="de64e655-6fa4-4d6b-93cc-9a7a9a40364a" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/html/background.html" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/html/background.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/html/download.html" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/html/download.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/html/popup.html" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/html/popup.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fbfe/js/background.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/background.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/js/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/js/content-script.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/content-script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/js/download.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/download.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fbfe/js/inject.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/inject.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/js/popup.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/popup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fbfe/js/utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/js/utils.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fbfe/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/fbfe/manifest.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -28,47 +20,37 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-            <file leaf-file-name="utils.js" pinned="false" current-in-tab="false">
-              <entry file="file://$PROJECT_DIR$/fbfe/js/utils.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="418">
-                    <caret line="45" column="36" lean-forward="true" selection-start-line="45" selection-start-column="36" selection-end-line="45" selection-end-column="36" />
-                    <folding>
-                      <element signature="n#!!block;n#download#0;n#Utils#0" />
-                      <element signature="n#!!block;n#realText#0;n#Utils#0" />
-                      <element signature="n#!!block;n#strNum#0;n#Utils#0" />
-                      <element signature="n#!!block;n#sec2time#0;n#Utils#0" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-            <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/fbfe/js/config.js">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="990">
-                    <caret line="102" column="8" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="background.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="utils.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fbfe/js/utils.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="43" column="37" selection-start-line="43" selection-start-column="37" selection-end-line="43" selection-end-column="37" />
+              <folding>
+                <element signature="n#!!block;n#download#0;n#Utils#0" />
+                <element signature="n#!!block;n#realText#0;n#Utils#0" />
+                <element signature="n#!!block;n#strNum#0;n#Utils#0" />
+                <element signature="n#!!block;n#sec2time#0;n#Utils#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fbfe/js/config.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1292">
+              <caret line="68" column="4" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="background.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fbfe/js/background.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1064">
-              <caret line="56" column="29" lean-forward="true" selection-start-line="56" selection-start-column="29" selection-end-line="56" selection-end-column="29" />
+            <state relative-caret-position="477">
+              <caret line="217" lean-forward="true" selection-start-line="217" selection-end-line="217" />
             </state>
           </provider>
         </entry>
@@ -85,32 +67,23 @@
       <file leaf-file-name="content-script.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/js/content-script.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
+            <state relative-caret-position="2147">
               <caret line="113" column="18" selection-start-line="113" selection-start-column="18" selection-end-line="113" selection-end-column="18" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="inject.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="inject.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/js/inject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="668">
-              <caret line="775" column="59" lean-forward="true" selection-start-line="775" selection-start-column="59" selection-end-line="775" selection-end-column="59" />
+            <state relative-caret-position="342">
+              <caret line="117" column="21" lean-forward="true" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <element signature="n#!!block;n#expansPostContent#0" />
-                <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+                <element signature="e#4478#5632#0" />
                 <element signature="n#!!block;n#autoExportIsStared#0" />
+                <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="download.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fbfe/html/download.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="14" column="7" lean-forward="true" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -118,7 +91,7 @@
       <file leaf-file-name="popup.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/html/popup.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="684">
+            <state relative-caret-position="345">
               <caret line="36" column="28" selection-start-line="36" selection-start-column="19" selection-end-line="36" selection-end-column="28" />
             </state>
           </provider>
@@ -127,17 +100,8 @@
       <file leaf-file-name="download.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/js/download.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1520">
-              <caret line="80" column="47" lean-forward="true" selection-start-line="80" selection-start-column="47" selection-end-line="80" selection-end-column="47" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fbfe/html/test.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="31" column="28" lean-forward="true" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
+            <state relative-caret-position="345">
+              <caret line="80" column="47" selection-start-line="80" selection-start-column="47" selection-end-line="80" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -145,8 +109,8 @@
       <file leaf-file-name="popup.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/js/popup.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="50" column="45" lean-forward="true" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
+            <state relative-caret-position="950">
+              <caret line="50" column="45" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -154,8 +118,8 @@
       <file leaf-file-name="manifest.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbfe/manifest.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="21" column="39" lean-forward="true" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+            <state relative-caret-position="456">
+              <caret line="24" column="6" lean-forward="true" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -172,23 +136,12 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>findAllDataInPhotoContextualLayer</find>
-      <find>initCustomPanel</find>
-      <find>AllPage</find>
-      <find>LoadPageWithDataRange</find>
-      <find>AllUr</find>
-      <find>findAllFeedBack</find>
-      <find>findAllUrl</find>
-      <find>SendMessage2StartExport</find>
       <find>needExport</find>
       <find>needExpand</find>
-      <find>gNoEXpand</find>
       <find>titleData</find>
-      <find>startExport</find>
       <find>StartExportPerPage</find>
       <find>StartExportWithDateRange</find>
       <find>ExportNotReady</find>
-      <find>autoExportWithDataRange</find>
       <find>cmd.needExpand</find>
       <find>findAllDataInPostContentualLayer</find>
       <find>getLangText</find>
@@ -197,11 +150,22 @@
       <find>totle</find>
       <find>FinishOnPage</find>
       <find>tabs.create</find>
-      <find>finishExport</find>
-      <find>autoExportFinish</find>
       <find>findAllDataInVideoContextualLayer</find>
       <find>autoExportNotReady</find>
       <find>UFILastCommentComponent</find>
+      <find>autoExportWithDataRange</find>
+      <find>allu</find>
+      <find>findAllFeedBack</find>
+      <find>findAllDataInPhotoContextualLayer</find>
+      <find>totleLike</find>
+      <find>autoExportFinish</find>
+      <find>finishExport</find>
+      <find>expansPostContent</find>
+      <find>startExport</find>
+      <find>autoExportStart</find>
+      <find>SendMessage2StartExport</find>
+      <find>gNoEXpand</find>
+      <find>finishexport</find>
     </findStrings>
     <replaceStrings>
       <replace>let</replace>
@@ -221,13 +185,13 @@
         <option value="$PROJECT_DIR$/fbfe/html/download.html" />
         <option value="$PROJECT_DIR$/fbfe/js/download.js" />
         <option value="$PROJECT_DIR$/fbfe/js/content-script.js" />
-        <option value="$PROJECT_DIR$/fbfe/js/utils.js" />
         <option value="$PROJECT_DIR$/fbfe/html/popup.html" />
         <option value="$PROJECT_DIR$/fbfe/js/popup.js" />
         <option value="$PROJECT_DIR$/fbfe/js/config.js" />
+        <option value="$PROJECT_DIR$/fbfe/js/utils.js" />
+        <option value="$PROJECT_DIR$/fbfe/js/inject.js" />
         <option value="$PROJECT_DIR$/fbfe/manifest.json" />
         <option value="$PROJECT_DIR$/fbfe/js/background.js" />
-        <option value="$PROJECT_DIR$/fbfe/js/inject.js" />
       </list>
     </option>
   </component>
@@ -241,9 +205,8 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2078" />
-    <option name="y" value="221" />
-    <option name="width" value="2098" />
+    <option name="x" value="1713" />
+    <option name="width" value="1734" />
     <option name="height" value="1407" />
   </component>
   <component name="ProjectView">
@@ -310,27 +273,30 @@
       <workItem from="1531448995140" duration="709000" />
       <workItem from="1531450133569" duration="21275000" />
       <workItem from="1531791442553" duration="22461000" />
-      <workItem from="1531883336614" duration="15187000" />
+      <workItem from="1531883336614" duration="16352000" />
+      <workItem from="1532312025215" duration="3129000" />
+      <workItem from="1533542193784" duration="2425000" />
+      <workItem from="1534729384673" duration="4486000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="205159000" />
+    <option name="totallyTimeSpent" value="216364000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2078" y="221" width="2098" height="1407" extended-state="0" />
+    <frame x="1713" y="0" width="1734" height="1407" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2012488" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" visible="true" weight="0.11520376" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -386,9 +352,9 @@
           <caret line="1502" column="30" selection-start-line="1502" selection-start-column="30" selection-end-line="1502" selection-end-column="30" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#expansPostContent#0" />
-            <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+            <element signature="e#4478#5632#0" />
             <element signature="n#!!block;n#autoExportIsStared#0" />
+            <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
           </folding>
         </state>
       </provider>
@@ -504,9 +470,9 @@
           <caret line="1450" column="28" selection-start-line="1450" selection-start-column="28" selection-end-line="1450" selection-end-column="29" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#expansPostContent#0" />
-            <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+            <element signature="e#4478#5632#0" />
             <element signature="n#!!block;n#autoExportIsStared#0" />
+            <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
           </folding>
         </state>
       </provider>
@@ -538,9 +504,9 @@
           <caret line="553" column="17" selection-start-line="553" selection-start-column="17" selection-end-line="553" selection-end-column="17" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#expansPostContent#0" />
-            <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+            <element signature="e#4478#5632#0" />
             <element signature="n#!!block;n#autoExportIsStared#0" />
+            <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
           </folding>
         </state>
       </provider>
@@ -638,9 +604,9 @@
           <caret line="207" column="13" selection-start-line="207" selection-start-column="13" selection-end-line="207" selection-end-column="13" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#expansPostContent#0" />
-            <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+            <element signature="e#4478#5632#0" />
             <element signature="n#!!block;n#autoExportIsStared#0" />
+            <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
           </folding>
         </state>
       </provider>
@@ -652,6 +618,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/fbfe/html/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="589">
+          <caret line="31" column="28" lean-forward="true" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fbfe/js/popup.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="950">
+          <caret line="50" column="45" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fbfe/js/content-script.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2147">
+          <caret line="113" column="18" selection-start-line="113" selection-start-column="18" selection-end-line="113" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/fbfe/html/background.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
@@ -659,24 +646,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/html/test.html">
+    <entry file="file://$PROJECT_DIR$/fbfe/js/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="31" column="28" lean-forward="true" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
+        <state relative-caret-position="1292">
+          <caret line="68" column="4" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/js/content-script.js">
+    <entry file="file://$PROJECT_DIR$/fbfe/js/download.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="113" column="18" selection-start-line="113" selection-start-column="18" selection-end-line="113" selection-end-column="18" />
+        <state relative-caret-position="345">
+          <caret line="80" column="47" selection-start-line="80" selection-start-column="47" selection-end-line="80" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fbfe/html/popup.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="36" column="28" selection-start-line="36" selection-start-column="19" selection-end-line="36" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fbfe/js/utils.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="45" column="36" lean-forward="true" selection-start-line="45" selection-start-column="36" selection-end-line="45" selection-end-column="36" />
+        <state relative-caret-position="323">
+          <caret line="43" column="37" selection-start-line="43" selection-start-column="37" selection-end-line="43" selection-end-column="37" />
           <folding>
             <element signature="n#!!block;n#download#0;n#Utils#0" />
             <element signature="n#!!block;n#realText#0;n#Utils#0" />
@@ -686,58 +680,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/html/popup.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="36" column="28" selection-start-line="36" selection-start-column="19" selection-end-line="36" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/js/download.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1520">
-          <caret line="80" column="47" lean-forward="true" selection-start-line="80" selection-start-column="47" selection-end-line="80" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/js/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="990">
-          <caret line="102" column="8" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/js/popup.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="50" column="45" lean-forward="true" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fbfe/manifest.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="21" column="39" lean-forward="true" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fbfe/js/background.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1064">
-          <caret line="56" column="29" lean-forward="true" selection-start-line="56" selection-start-column="29" selection-end-line="56" selection-end-column="29" />
+        <state relative-caret-position="456">
+          <caret line="24" column="6" lean-forward="true" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fbfe/js/inject.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="668">
-          <caret line="775" column="59" lean-forward="true" selection-start-line="775" selection-start-column="59" selection-end-line="775" selection-end-column="59" />
+        <state relative-caret-position="342">
+          <caret line="117" column="21" lean-forward="true" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="n#!!block;n#expansPostContent#0" />
-            <element signature="n#!!block;n#findAllDataInPhotoContextualLayer#0" />
+            <element signature="e#4478#5632#0" />
             <element signature="n#!!block;n#autoExportIsStared#0" />
+            <marker date="1534733644491" expanded="true" signature="51590:51605" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fbfe/js/background.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="217" lean-forward="true" selection-start-line="217" selection-end-line="217" />
         </state>
       </provider>
     </entry>

@@ -228,6 +228,9 @@ function SendMessage2StartExport(tab,msg,times=0) {
         if (timeID != -1){
             clearTimeout(timeID);
         }
+        if (urlList2Export[idx2Export]){
+            msg["targetURL"] = urlList2Export[idx2Export].url;
+        }
         timeID = setTimeout(SendMessage2StartExport,1000*(times+1),tab,msg,++times);
         console.log(msg);
         chrome.tabs.sendMessage(tab.id,msg);

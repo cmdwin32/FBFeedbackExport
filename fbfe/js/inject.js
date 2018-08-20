@@ -10,7 +10,7 @@ function findAllFeedBack(startTime,endTime,callback)
 
 let gTitleData = null;
 let gNoEXpand = false; // 不展开
-
+let gCurrentUrl = ''; // 传进来的初始url
 
 
 // 根据一个时间范围加载页面
@@ -31,7 +31,7 @@ function LoadPageWithDataRange(startTimestamp,endTimestamp,callBack){
 			}
 		}
 	}
-	console.log(timeList)
+	console.log(timeList);
     console.log(timeList[timeList.length-1]);
 	console.log(endTimestamp);
 	// 如果没有加载到指定的结束时间，就调用页面的继续加载接口
@@ -85,7 +85,8 @@ function expansPostContent(){
             let title = timeNode[0].parentNode.parentNode.getAttribute("aria-label");
             console.log(url)
             console.log(window.location.href)
-            if (window.location.href.indexOf(url) >= 0) {
+            console.log(gCurrentUrl);
+            if (window.location.href.indexOf(gCurrentUrl) >= 0) {
                 console.log("find current url:"+url);
                 // 找到了需要导出的分享。开始展开分享
                 let expBtns = cN[idx].getElementsByClassName("UFIPagerLink");
@@ -1247,11 +1248,13 @@ window.addEventListener('message',function(e){
         gNoEXpand = e.data.needExpand !== true;
         // console.log(gNoEXpand);
         gTitleData = e.data.titleData;
+        gCurrentUrl = e.data.targetURL;
         autoExportStart();
     }
     else if (e.data.cmd === "reStartExport"){
         gTitleData = e.data.titleData;
         gNoEXpand = e.data.needExpand !== true;
+        gCurrentUrl = e.data.targetURL;
         isAutoExport = false;
         autoExportStart();
     }
@@ -1259,6 +1262,7 @@ window.addEventListener('message',function(e){
         console.log("autoExportWithDataRange");
         console.log(e.data);
         gNoEXpand = e.data.needExpand !== true;
+        gCurrentUrl = e.data.targetURL;
         // 根据传入的时间获得需要导出的全部链接，并开始导出
         if (e.data.data && e.data.data.startTime && e.data.data.endTime){
             if (isAutoExport == false){
