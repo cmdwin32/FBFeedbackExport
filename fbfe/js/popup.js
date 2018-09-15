@@ -30,9 +30,17 @@ $("#autoExport").click( e=>{
     });
 });
 
+$("#exportShownPage").click(e=>{
+    console.log("exportShownPage");
+    var needExpand = $("#needExpand").prop('checked');
+    chrome.runtime.sendMessage({cmd:"exportShownPage",needExpand:needExpand}, function(response) {
+        console.log('收到来自后台的回复：' + response);
+    });
+});
+
 $("#test").click(e=>{ // https://www.facebook.com/ROVTH/posts/1042783195885129
     chrome.runtime.sendMessage({cmd:"StartExportPerPage",data:{allUrl:[{url:"/ROVTH/photos/a.687150514781734.1073741828.685438628286256/983947705102012/?type=3"},{url:"/ROVTH/videos/983745925122190/"},{url:"/ROVTH/videos/982635121899937/"},{url:"/ROVTH/videos/982574958572620/"},{url:"/ROVTH/photos/a.687150514781734.1073741828.685438628286256/982553545241428/?type=3"}]}},function (response) {
-        
+
     })
 });
 

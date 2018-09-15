@@ -135,10 +135,13 @@ class Utils{
     static getDateFromString(str){
         console.log("getDateFromString");
         console.log(str);
-        if (str.indexOf("日 ") <0 ){
-            str = str.replace("日","日 ")
-        }
-        return str.split(' ');
+        //2018 年 9 月 9 日 周日 17:20
+        str = str.replace(/周[一二三四五六日]/,'');
+        str = str.replace(" 年 ","-");
+        str = str.replace(" 月 ","-");
+        str = str.replace(" 日 ","");
+        var time = Date.parse(str);
+        return [new Date(time).toLocaleDateString(),new Date(time).toLocaleTimeString()];
     }
     static likeCheckAndPutInLine(key,value,line){
         console.log("likeCheckAndPutInLine");

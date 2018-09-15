@@ -12,63 +12,67 @@ let gTitleData = null;
 let gNoEXpand = false; // 不展开
 let gCurrentUrl = ''; // 传进来的初始url
 
+let lpTimerID = 0;
 
 // 根据一个时间范围加载页面
 function LoadPageWithDataRange(startTimestamp,endTimestamp,callBack){
-	// console.log("startTimestamp"+startTimestamp);
-	// console.log("endTimestamp"+endTimestamp);
-	let timeList = [];
-	// 查找到所有分享
-	let nL = document.getElementsByClassName("userContentWrapper");
-	// console.log("nL"+nL.length);
-	for(let nIdx = 0;nIdx < nL.length; ++ nIdx){
-		let timeNode = nL[nIdx].getElementsByClassName("timestampContent");
-		if (timeNode && timeNode.length > 0) {
-			let time = timeNode[0].parentNode.getAttribute("data-utime");	
-			// console.log("time"+time);
-			if (time) {
-				timeList.push(time);
-			}
-		}
-	}
-	console.log(timeList);
-    console.log(timeList[timeList.length-1]);
-	console.log(endTimestamp);
-	// 如果没有加载到指定的结束时间，就调用页面的继续加载接口
-	if (timeList[timeList.length-1] > endTimestamp) {
-		// 直接查询物理位置最后一个，这样可以避免置顶的帖子很旧的问题
-		// let getMorePageNode = document.getElementsByClassName("uiMorePager");
-		// console.log(getMorePageNode);
-		// if (getMorePageNode && getMorePageNode.length > 0) {
-		//     for (var idx = 0 ; idx < getMorePageNode.length; ++ idx){
-         //        // getMorePageNode[idx].scrollIntoView();
-         //        // console.log("scrollIntoView:"+idx);
-         //        // console.log(getMorePageNode[idx]);
-         //        // dispatch(getMorePageNode[idx],"click");
-         //    }
-		// 	// 加载下一页
-		// 	setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
-		// }
-		// else{
-		// 	// console.log("no uiMorePager");
-		// 	// console.log(getMorePageNode);
-         //    if (callBack){
-         //        callBack();
-         //    }
-		// }
+    lpTimerID = setInterval(lpDataRageIMP,5000,startTimestamp,endTimestamp,callBack);
+}
+
+function lpDataRageIMP(startTimestamp,endTimestamp,callBack) {
+    let timeList = [];
+    // 查找到所有分享
+    let nL = document.getElementsByClassName("userContentWrapper");
+    console.log("nL"+nL.length);
+    let timeNode = nL[nL.length-1].getElementsByClassName("timestampContent");
+    let lastTime = 0;
+    if (timeNode && timeNode.length > 0) {
+        lastTime = timeNode[0].parentNode.getAttribute("data-utime");
+    }
+    nL = [];
+    nL = null;
+    // console.log(timeList);
+    console.log(lastTime);
+    console.log(endTimestamp);
+    // 如果没有加载到指定的结束时间，就调用页面的继续加载接口
+    if (lastTime > endTimestamp) {
+        // 直接查询物理位置最后一个，这样可以避免置顶的帖子很旧的问题
+        // let getMorePageNode = document.getElementsByClassName("uiMorePager");
+        // console.log(getMorePageNode);
+        // if (getMorePageNode && getMorePageNode.length > 0) {
+        //     for (var idx = 0 ; idx < getMorePageNode.length; ++ idx){
+        //        // getMorePageNode[idx].scrollIntoView();
+        //        // console.log("scrollIntoView:"+idx);
+        //        // console.log(getMorePageNode[idx]);
+        //        // dispatch(getMorePageNode[idx],"click");
+        //    }
+        // 	// 加载下一页
+        // 	setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
+        // }
+        // else{
+        // 	// console.log("no uiMorePager");
+        // 	// console.log(getMorePageNode);
+        //    if (callBack){
+        //        callBack();
+        //    }
+        // }
         // 直接滚到页底
         window.scrollTo(0, document.body.scrollHeight);
         // 加载下一页
-        setTimeout(LoadPageWithDataRange,3000,startTimestamp,endTimestamp,callBack);
+        // setTimeout(LoadPageWithDataRange,5000,startTimestamp,endTimestamp,callBack);
 
-	}
-	else{
-		// console.log(timeList);
-		// console.log(endTimestamp);
+    }
+    else{
+        if (lpTimerID > 0){
+            clearImmediate(lpTimerID);
+            lpTimerID = 0;
+        }
+        // console.log(timeList);
+        // console.log(endTimestamp);
         if (callBack){
             callBack();
         }
-	}
+    }
 }
 
 // 导出数据的入口
@@ -1264,11 +1268,18 @@ window.addEventListener('message',function(e){
         gNoEXpand = e.data.needExpand !== true;
         gCurrentUrl = e.data.targetURL;
         // 根据传入的时间获得需要导出的全部链接，并开始导出
-        if (e.data.data && e.data.data.startTime && e.data.data.endTime){
+        if (e.data.data && e.data.data.startTime !== null && e.data.data.endTime  !== null ){
+
             if (isAutoExport == false){
                 isAutoExport = true;
                 autoExportIsStared();
-                findAllUrl(e.data.data.startTime,e.data.data.endTime);
+                if (e.data.data.startTime == 0){
+                    findUrlInShowm();
+                }
+                else{
+                    findAllUrl(e.data.data.startTime,e.data.data.endTime);
+                }
+
             }
         }
         else{
@@ -1351,6 +1362,25 @@ function findAllUrl(startTime=null,endTime=null) {
 
 }
 
+function findUrlInShowm() {
+    let resData = [];
+    let cN = document.getElementsByClassName("userContentWrapper");
+    for (let idx = 0; idx < cN.length; ++idx){
+        let timeNode = cN[idx].getElementsByClassName("timestampContent");
+        if (timeNode && timeNode[0] && timeNode[0].parentNode && timeNode[0].parentNode.parentNode && timeNode[0].parentNode.parentNode.nodeName === "A"){
+            let url =  timeNode[0].parentNode.parentNode.getAttribute("href");
+            let title = timeNode[0].parentNode.parentNode.getAttribute("aria-label");
+            let time = timeNode[0].parentNode.getAttribute("data-utime");
+            resData.push({
+                url : url,
+                title : title,
+                time : time,
+            });
+        }
+    }
+    console.log(resData);
+    sendMsg("StartExportPerPage",{allUrl:resData,});
+}
 
 // 跳过自动导出
 function ignore() {

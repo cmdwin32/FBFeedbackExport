@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
 	<title>1234</title>
 	<script type="text/javascript" src="../js/lib/shim.min.js"></script>
 	<script type="text/javascript" src="../js/lib/xlsx.full.min.js"></script>
@@ -39,7 +42,24 @@
 			var node = document.getElementById("my_span");
 			console.log(node)
 			console.log(node.innerText);
+
+			var time= Date.parse("2018-9-03 22:15");
+			console.log(time);
+			var str = "2018 年 9 月 3 日 周一 23:22";
+            str = str.replace(/周[一二三四五六日]/g, '');
+			time = Date.parse(str);
+            console.log(time);
 		}
+        var time= Date.parse("2018-9-03 22:15");
+        console.log(time);
+        var str = "2018 年 9 月 3 日 周一 23:22";
+        str = str.replace(/周[一二三四五六日]/,'');
+        str = str.replace(" 年 ","-");
+        str = str.replace(" 月 ","-");
+        str = str.replace(" 日 ","");
+        time = Date.parse(str);
+        console.log(new Date(time).toLocaleDateString());
+        console.log(new Date(time).toLocaleTimeString());
 	</script>
 </head>
 <h2>插件操作区：</h2>

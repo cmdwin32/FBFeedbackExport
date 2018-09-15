@@ -28,6 +28,13 @@ function(req,sender,sendRsp){
         endDate.setDate(endDate.getDate()-7);
         autoExportWithDataRange(new Date(),endDate);
     }
+    else if (req.cmd == "exportShownPage"){
+        // 自动导出正在显示的页面
+        gNeedExpand = req.needExpand;
+        chrome.tabs.getSelected(null,function (tab) {
+            SendMessage2StartExport(tab,{cmd:"autoExportWithDataRange",data:{startTime:0,endTime:0},needExpand:gNeedExpand});
+        });
+    }
     else if (req.cmd == "autoExportTwoWeek") {
         // 自动导出15天
         if (req.needExpand !== null && req.needExpand != undefined){
@@ -228,7 +235,7 @@ function SendMessage2StartExport(tab,msg,times=0) {
         if (timeID != -1){
             clearTimeout(timeID);
         }
-        if (urlList2Export[idx2Export]){
+        if (idx2Export >= 0 && urlList2Export[idx2Export]){
             msg["targetURL"] = urlList2Export[idx2Export].url;
         }
         timeID = setTimeout(SendMessage2StartExport,1000*(times+1),tab,msg,++times);
@@ -416,6 +423,7 @@ function autoExportWithDataRange(startTime,endTime) {
     console.log(endTime);
     // 打开默认主页
     let url = "https://www.facebook.com/pg/ROVTH/posts";
+    // let url  = "https://www.facebook.com/pg/LienquanMobile/posts/";
     chrome.tabs.create(
         {url:url},
         function (tab) {
