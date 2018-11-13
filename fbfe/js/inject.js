@@ -63,8 +63,10 @@ function lpDataRageIMP(startTimestamp,endTimestamp,callBack) {
 
     }
     else{
+        console.log(lpTimerID);
+        console.log(callBack);
         if (lpTimerID > 0){
-            clearImmediate(lpTimerID);
+            clearInterval(lpTimerID);
             lpTimerID = 0;
         }
         // console.log(timeList);
@@ -174,43 +176,48 @@ function expansVideoPageContent(){
         return;
     }
     else{
-        autoExportIsStared();
     }
 	dispatch(video,'click');
 
 	// 标签切换到评论
-	let tabPL = document.getElementById("u_2_u");
+    let tabList = ["u_2_u","u_4_k","u_4_c","u_2_t"];
+    for (var i = 0; i < tabList.length; i++) {
+        tabPL = document.getElementById(tabList[i]);
+        if (tabPL != null) {
+            break;
+        }
+    }
 	if (tabPL){
 
         tabPL = tabPL.getElementsByTagName("span");
-        for (let idx = 0 ; idx < tabPL.length; ++idx){
-            // console.log(tabPL[idx]);
-            // console.log(tabPL[idx].innerText);
-            if (tabPL[idx].textContent.indexOf(Utils.getLangText("discuss")) >= 0) {
-                console.log("discuss");
-                console.log("u_2_u");
-                // console.log(tabPL[idx].parentNode);
-                dispatch(tabPL[idx].parentNode,"click");
+        if (tabPL.length == 0) {
+            autoExportNotReady(null);
+            console.error("no u_2_t span");
+            return;
+        }
+        else{
 
+            for (let idx = 0 ; idx < tabPL.length; ++idx){
+                // console.log(tabPL[idx]);
+                // console.log(tabPL[idx].innerText);
+                if (tabPL[idx].textContent.indexOf(Utils.getLangText("discuss")) >= 0) {
+                    console.log("discuss");
+                    console.log("u_2_t");
+                    // console.log(tabPL[idx].parentNode);
+                    dispatch(tabPL[idx].parentNode,"click");
+                }
             }
         }
     }
-    tabPL = document.getElementById("u_2_t");
-	if (tabPL){
-
-        tabPL = tabPL.getElementsByTagName("span");
-        for (let idx = 0 ; idx < tabPL.length; ++idx){
-            // console.log(tabPL[idx]);
-            // console.log(tabPL[idx].innerText);
-            if (tabPL[idx].textContent.indexOf(Utils.getLangText("discuss")) >= 0) {
-                console.log("discuss");
-                console.log("u_2_t");
-                // console.log(tabPL[idx].parentNode);
-                dispatch(tabPL[idx].parentNode,"click");
-            }
-        }
+    else
+    {
+        console.error("no u_2_t");
+        autoExportNotReady(null);
+            return;
     }
 	video.pause();
+
+    autoExportIsStared();
     // 更多评论
     let pLinkNodes = document.getElementsByClassName("UFIPagerLink");
     // console.log("pLinkNodes"+pLinkNodes.length);
@@ -517,7 +524,11 @@ function findAllDataInPhotoContextualLayer(){
                     if (actorAndBody){
 
                         let c =  actorAndBody.childNodes;
-                        if (c && c.length > 1) {
+                        if (c[0].classList.contains("UFICommentActorAndBodySpacing")) {
+                            line[config.index.content] = Utils.realText(actorAndBody.getElementsByClassName("UFICommentBody")[0].textContent);
+                            line[config.index.author] = Utils.realText(actorAndBody.getElementsByClassName("UFICommentActorName")[0].textContent);
+                        }
+                        else if (c && c.length > 1) {
                             line[config.index.author] = Utils.realText(c[0].textContent);
                             // console.log(c[1].nodeName);
                             if (c[1].nodeName === "#text") {
@@ -589,7 +600,11 @@ function findAllDataInPhotoContextualLayer(){
                         let actorAndBody = l2CNode[l2cnIdx].getElementsByClassName("UFICommentActorAndBody")[0];
                         if (actorAndBody){
                             let c =  actorAndBody.childNodes;
-                            if (c && c.length > 1) {
+                            if (c[0].classList.contains("UFICommentActorAndBodySpacing")) {
+                                line[config.index.author] = Utils.realText(actorAndBody.getElementsByClassName("UFICommentActorName")[0].textContent);
+                                line[config.index.content] = Utils.realText(actorAndBody.getElementsByClassName("UFICommentBody")[0].textContent);
+                            }
+                            else if (c && c.length > 1) {
                                 line[config.index.author] = Utils.realText(c[0].textContent);
                                 // console.log(c[1].nodeName);
                                 if (c[1].nodeName === "#text") {
@@ -849,7 +864,11 @@ function findAllDataInVideoContextualLayer(){
 						if ( UFICommentActorAndBody &&  UFICommentActorAndBody.length > 0) {
 							 UFICommentActorAndBody =  UFICommentActorAndBody[0];
 							 let c =  UFICommentActorAndBody.childNodes;
-							 if (c && c.length > 1) {
+                             if (c[0].classList.contains("UFICommentActorAndBodySpacing")) {
+                                line[config.index.content] = UFICommentActorAndBody.getElementsByClassName("UFICommentBody")[0].textContent;
+                                line[config.index.author] = UFICommentActorAndBody.getElementsByClassName("UFICommentActorName")[0].textContent;
+                             }
+							 else if (c && c.length > 1) {
 							 	line[config.index.author] = Utils.realText(c[0].textContent);
 							 	// console.log(c[1].nodeName);
 							 	if (c[1].nodeName === "#text") {
@@ -926,7 +945,11 @@ function findAllDataInVideoContextualLayer(){
 							if (contentNode && contentNode.childNodes) {
 
 								let c =  contentNode.childNodes;
-								if (c && c.length > 1) {
+                                    if (c[0].classList.contains("UFICommentActorAndBodySpacing")) {
+                                    line[config.index.content] = contentNode.getElementsByClassName("UFICommentBody")[0].textContent;
+                                    line[config.index.author] = contentNode.getElementsByClassName("UFICommentActorName")[0].textContent;
+                                }
+                                 else if (c && c.length > 1) {
 								 	line[config.index.author] = Utils.realText(c[0].textContent);
 								 	// console.log(c[1].nodeName);
 								 	if (c[1].nodeName === "#text") {
@@ -1219,7 +1242,7 @@ function autoExportStart(){
 
 // 自动导出还没有准备好
 function autoExportNotReady(data){
-    console.log("autoExportNotReady");
+    console.error("autoExportNotReady");
     console.log(isAutoExport);
     if (isAutoExport === true){
         isAutoExport = false;
@@ -1253,14 +1276,25 @@ window.addEventListener('message',function(e){
         // console.log(gNoEXpand);
         gTitleData = e.data.titleData;
         gCurrentUrl = e.data.targetURL;
-        autoExportStart();
+        try {
+            autoExportStart();
+        }
+        catch (e) {
+            console.error(e);
+            autoExportNotReady(null);
+        }
     }
     else if (e.data.cmd === "reStartExport"){
         gTitleData = e.data.titleData;
         gNoEXpand = e.data.needExpand !== true;
         gCurrentUrl = e.data.targetURL;
         isAutoExport = false;
-        autoExportStart();
+        try {
+            autoExportStart();
+        }
+        catch (e) {
+            autoExportNotReady(null);
+        }
     }
     else if (e.data.cmd === "autoExportWithDataRange"){
         console.log("autoExportWithDataRange");
